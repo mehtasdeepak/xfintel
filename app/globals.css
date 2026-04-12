@@ -1,26 +1,78 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --color-primary:           #006859;
+  --color-primary-dark:      #004d42;
+
+  /* Surfaces */
+  --color-surface:           #f5fbf7;
+  --color-surface-low:       #eff5f2;
+  --color-surface-container: #e0ebe6;
+  --color-white:             #ffffff;
+
+  /* Text */
+  --color-on-surface:        #171d1b;
+  --color-on-surface-var:    #3d4946;
+
+  /* Semantic */
+  --color-error:             #ba1a1a;
+  --color-success:           #006859;
+
+  /* Elevation */
+  --shadow-card: 0px 12px 32px rgba(23, 29, 27, 0.06);
+
+  /* Radius */
+  --radius-card: 1rem;
+
+  /* Spacing */
+  --container-padding: 24px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-on-surface);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography scale */
+.type-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.type-headline {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.type-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.type-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Card utility */
+.card {
+  background-color: var(--color-white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--container-padding);
 }
