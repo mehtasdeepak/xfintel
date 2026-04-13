@@ -232,7 +232,7 @@ async function stepSyncPosts(bearerToken: string): Promise<Step2Result> {
 // ─── Step 3: Categorize posts with category = 'noise' ────────────────────────
 
 const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
-const CATEGORIZE_LIMIT = 50; // cap per cron run to stay within timeout
+const CATEGORIZE_LIMIT = 100; // posts per pass
 const POST_DELAY_MS = 300;
 
 type ClaudeCategory =
@@ -316,14 +316,18 @@ async function classifyPost(content: string, apiKey: string): Promise<ClaudeResu
   return parsed;
 }
 
-async function stepCategorizePosts(apiKey: string): Promise<Step3Result> {
-  const t0 = Date.now();
-  const categoryBreakdown: Record<string, number> = {};
-  const sentimentBreakdown: Record<string, number> = {};
-  let totalCategorized = 0;
-  let confidenceSum = 0;
-  let failedCount = 0;
+type BatchAccumulator = {
+  categoryBreakdown: Record<string, number>;
+  sentimentBreakdown: Record<string, number>;
+  totalCategorized: number;
+  confidenceSum: number;
+  failedCount: number;
+};
 
+async function runCategorizeBatch(
+  apiKey: string,
+  acc: BatchAccumulator
+): Promise<number> {
   const { data: posts, error: fetchError } = await supabase
     .from("posts")
     .select("id, content, ticker_symbols")
@@ -331,16 +335,7 @@ async function stepCategorizePosts(apiKey: string): Promise<Step3Result> {
     .limit(CATEGORIZE_LIMIT);
 
   if (fetchError) throw new Error(`Supabase fetch error: ${fetchError.message}`);
-  if (!posts || posts.length === 0) {
-    return {
-      total_categorized: 0,
-      category_breakdown: {},
-      sentiment_breakdown: {},
-      average_confidence: 0,
-      failed_count: 0,
-      time_ms: Date.now() - t0,
-    };
-  }
+  if (!posts || posts.length === 0) return 0;
 
   for (let i = 0; i < posts.length; i++) {
     if (i > 0) await sleep(POST_DELAY_MS);
@@ -351,7 +346,7 @@ async function stepCategorizePosts(apiKey: string): Promise<Step3Result> {
     try {
       result = await classifyPost(post.content, apiKey);
     } catch {
-      failedCount++;
+      acc.failedCount++;
       continue;
     }
 
@@ -372,25 +367,46 @@ async function stepCategorizePosts(apiKey: string): Promise<Step3Result> {
       .eq("id", post.id);
 
     if (updateError) {
-      failedCount++;
+      acc.failedCount++;
       continue;
     }
 
-    totalCategorized++;
-    confidenceSum += result.confidence;
-    categoryBreakdown[result.category] = (categoryBreakdown[result.category] ?? 0) + 1;
-    sentimentBreakdown[result.sentiment] = (sentimentBreakdown[result.sentiment] ?? 0) + 1;
+    acc.totalCategorized++;
+    acc.confidenceSum += result.confidence;
+    acc.categoryBreakdown[result.category] = (acc.categoryBreakdown[result.category] ?? 0) + 1;
+    acc.sentimentBreakdown[result.sentiment] = (acc.sentimentBreakdown[result.sentiment] ?? 0) + 1;
+  }
+
+  return posts.length;
+}
+
+async function stepCategorizePosts(apiKey: string): Promise<Step3Result> {
+  const t0 = Date.now();
+  const acc: BatchAccumulator = {
+    categoryBreakdown: {},
+    sentimentBreakdown: {},
+    totalCategorized: 0,
+    confidenceSum: 0,
+    failedCount: 0,
+  };
+
+  // First pass
+  const firstBatchSize = await runCategorizeBatch(apiKey, acc);
+
+  // Second pass — only if first pass was full (more noise posts may remain)
+  if (firstBatchSize === CATEGORIZE_LIMIT) {
+    await runCategorizeBatch(apiKey, acc);
   }
 
   return {
-    total_categorized: totalCategorized,
-    category_breakdown: categoryBreakdown,
-    sentiment_breakdown: sentimentBreakdown,
+    total_categorized: acc.totalCategorized,
+    category_breakdown: acc.categoryBreakdown,
+    sentiment_breakdown: acc.sentimentBreakdown,
     average_confidence:
-      totalCategorized > 0
-        ? Math.round((confidenceSum / totalCategorized) * 1000) / 1000
+      acc.totalCategorized > 0
+        ? Math.round((acc.confidenceSum / acc.totalCategorized) * 1000) / 1000
         : 0,
-    failed_count: failedCount,
+    failed_count: acc.failedCount,
     time_ms: Date.now() - t0,
   };
 }
