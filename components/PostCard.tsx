@@ -88,12 +88,14 @@ export default function PostCard({ post }: { post: Post }) {
 
   return (
     <article
-      className="flex flex-col gap-3 p-4 md:p-6 rounded-2xl"
+      // Desktop: left colored border via CSS custom property.
+      // Mobile: no border — clean ambient shadow only.
+      className="flex flex-col gap-3 p-4 md:p-6 rounded-2xl md:[border-left:4px_solid_var(--cat-border)]"
       style={{
         backgroundColor: "#ffffff",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
-        borderLeft: `4px solid ${borderColor}`,
-      }}
+        "--cat-border": borderColor,
+      } as React.CSSProperties}
     >
       {/* Row 1: Avatar + name + handle + time */}
       <div className="flex items-center justify-between gap-3">
@@ -106,20 +108,20 @@ export default function PostCard({ post }: { post: Post }) {
             >
               {displayName}
             </p>
-            <p className="text-[10px] md:text-[11px] truncate" style={{ color: "#3d4946", opacity: 0.75 }}>
+            <p
+              className="text-[10px] md:text-[11px] truncate"
+              style={{ color: "#3d4946", opacity: 0.75 }}
+            >
               {handle}
             </p>
           </div>
         </div>
-        <p
-          className="text-xs flex-shrink-0"
-          style={{ color: "#3d4946" }}
-        >
+        <p className="text-xs flex-shrink-0" style={{ color: "#3d4946" }}>
           {timeAgo(post.posted_at)}
         </p>
       </div>
 
-      {/* Row 2: Badges + tickers — horizontal scroll on mobile */}
+      {/* Row 2: Category badge + tickers (mobile); + sentiment badge (desktop) */}
       <div
         className="flex items-center gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
         style={{
@@ -131,8 +133,11 @@ export default function PostCard({ post }: { post: Post }) {
         }}
       >
         <CategoryBadge category={post.category as Parameters<typeof CategoryBadge>[0]["category"]} />
+        {/* Sentiment badge — hidden on mobile to keep row compact */}
         {post.sentiment && (
-          <SentimentBadge sentiment={post.sentiment as Parameters<typeof SentimentBadge>[0]["sentiment"]} />
+          <span className="hidden md:block flex-shrink-0">
+            <SentimentBadge sentiment={post.sentiment as Parameters<typeof SentimentBadge>[0]["sentiment"]} />
+          </span>
         )}
         {post.ticker_symbols?.map((ticker) => (
           <span
@@ -145,17 +150,11 @@ export default function PostCard({ post }: { post: Post }) {
         ))}
       </div>
 
-      {/* Row 3: Post content with read-more toggle */}
+      {/* Row 3: Post content — 3 lines on mobile, 4 on desktop */}
       <div>
         <p
-          className="text-sm leading-relaxed whitespace-pre-wrap"
-          style={{
-            color: "#171d1b",
-            display: "-webkit-box",
-            WebkitBoxOrient: "vertical",
-            WebkitLineClamp: expanded ? "unset" : 4,
-            overflow: expanded ? "visible" : "hidden",
-          }}
+          className={`text-sm leading-relaxed whitespace-pre-wrap${!expanded ? " line-clamp-3 md:line-clamp-4" : ""}`}
+          style={{ color: "#171d1b" }}
         >
           {post.content}
         </p>
@@ -168,7 +167,8 @@ export default function PostCard({ post }: { post: Post }) {
         </button>
       </div>
 
-      {/* Row 4: Confidence + View on X */}
+      {/* Row 4: Confidence left, View on X right */}
+      {/* Mobile: both gray. Desktop: View on X green with hover. */}
       <div className="flex items-center justify-between pt-1">
         <div>
           {confidence != null && (
@@ -181,14 +181,7 @@ export default function PostCard({ post }: { post: Post }) {
           href={xUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[0.75rem] md:text-xs font-medium transition-colors"
-          style={{ color: "#006859" }}
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLElement).style.color = "#004d42")
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLElement).style.color = "#006859")
-          }
+          className="text-[0.75rem] md:text-xs font-medium transition-colors text-[#3d4946] md:text-[#006859] md:hover:text-[#004d42]"
         >
           View on X ↗
         </a>

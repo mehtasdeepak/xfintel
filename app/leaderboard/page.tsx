@@ -235,6 +235,149 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
   );
 }
 
+// ─── Mobile podium (top 3) ────────────────────────────────────────────────────
+
+function MobilePodium({ top3 }: { top3: Influencer[] }) {
+  const first  = top3[0] ?? null;
+  const second = top3[1] ?? null;
+  const third  = top3[2] ?? null;
+
+  function PodiumItem({
+    inf,
+    rank,
+    size,
+    elevated = false,
+  }: {
+    inf: Influencer;
+    rank: number;
+    size: number;
+    elevated?: boolean;
+  }) {
+    const accentColor = RANK_ACCENT[rank] ?? "#006859";
+    const truncated =
+      inf.display_name.length > 10
+        ? inf.display_name.slice(0, 10) + "…"
+        : inf.display_name;
+    const winText = inf.win_rate != null ? `${inf.win_rate}%` : "N/A";
+
+    return (
+      <div
+        className="flex flex-col items-center gap-1.5"
+        style={{ paddingBottom: elevated ? 40 : 0 }}
+      >
+        {/* Avatar with optional ring + rank badge */}
+        <div className="relative flex-shrink-0">
+          {elevated ? (
+            <div
+              style={{
+                borderRadius: "9999px",
+                border: "3px solid #006859",
+                padding: 3,
+                display: "inline-flex",
+              }}
+            >
+              <Avatar src={inf.profile_image_url} name={inf.display_name} size={size} />
+            </div>
+          ) : (
+            <Avatar src={inf.profile_image_url} name={inf.display_name} size={size} />
+          )}
+          {/* Rank badge */}
+          <span
+            className="absolute bottom-0 right-0 rounded-full flex items-center justify-center font-bold text-white"
+            style={{
+              width: 20,
+              height: 20,
+              backgroundColor: accentColor,
+              fontSize: "0.6rem",
+              border: "2px solid #ffffff",
+            }}
+          >
+            {rank}
+          </span>
+        </div>
+
+        {/* WINNER label for rank 1 */}
+        {elevated && (
+          <span
+            style={{
+              fontSize: "0.5rem",
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "#006859",
+            }}
+          >
+            WINNER
+          </span>
+        )}
+
+        <p
+          className="text-xs font-semibold text-center"
+          style={{ color: "#171d1b", maxWidth: size + 16 }}
+        >
+          {truncated}
+        </p>
+        <p className="text-xs font-bold" style={{ color: "#006859" }}>
+          {winText}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="md:hidden rounded-2xl p-6 flex flex-col gap-5"
+      style={{
+        backgroundColor: "#ffffff",
+        boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
+      }}
+    >
+      <p className="type-label text-center" style={{ color: "#3d4946" }}>
+        Top 3 This Period
+      </p>
+
+      <div className="flex items-end justify-center gap-8">
+        {second && <PodiumItem inf={second} rank={2} size={64} />}
+        {first  && <PodiumItem inf={first}  rank={1} size={80} elevated />}
+        {third  && <PodiumItem inf={third}  rank={3} size={64} />}
+      </div>
+    </div>
+  );
+}
+
+// ─── Mobile rank row (ranks 4+) ───────────────────────────────────────────────
+
+function MobileRankRow({ inf, rank }: { inf: Influencer; rank: number }) {
+  return (
+    <a
+      href={`/influencer/${inf.x_handle.replace(/^@/, "")}`}
+      className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
+      style={{
+        backgroundColor: "#ffffff",
+        boxShadow: "0px 2px 8px rgba(23, 29, 27, 0.06)",
+        textDecoration: "none",
+      }}
+    >
+      <p
+        className="text-sm font-bold flex-shrink-0 w-6 text-center"
+        style={{ color: "#006859" }}
+      >
+        {String(rank).padStart(2, "0")}
+      </p>
+      <Avatar src={inf.profile_image_url} name={inf.display_name} size={36} />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold truncate" style={{ color: "#171d1b" }}>
+          {inf.display_name}
+        </p>
+        <p className="text-xs" style={{ color: "#3d4946" }}>
+          {inf.total_signals} signals
+        </p>
+      </div>
+      <WinRatePill value={inf.win_rate} />
+    </a>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function LeaderboardPage() {
@@ -333,9 +476,29 @@ export default function LeaderboardPage() {
             </div>
           )}
 
-          {/* Leaderboard table card */}
+          {/* ── Mobile podium + simplified rank list ── */}
+          {!loading && !error && influencers.length > 0 && (
+            <div className="md:hidden flex flex-col gap-3">
+              <MobilePodium top3={influencers.slice(0, 3)} />
+
+              {influencers.slice(3, FREE_TIER_LIMIT).length > 0 && (
+                <>
+                  <p className="type-label mt-1" style={{ color: "#3d4946" }}>
+                    Ranks 4–{Math.min(FREE_TIER_LIMIT, influencers.length)}
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {influencers.slice(3, FREE_TIER_LIMIT).map((inf, idx) => (
+                      <MobileRankRow key={inf.id} inf={inf} rank={idx + 4} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Leaderboard table card — desktop only */}
           <div
-            className="overflow-hidden"
+            className="hidden md:block overflow-hidden"
             style={{ backgroundColor: "#ffffff", borderRadius: "1rem", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
           >
             {/* Table header */}

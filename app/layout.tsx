@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,10 +32,11 @@ export default function RootLayout({
         <meta name="description" content="Track financial influencers on X. Every trade call, gain, loss and exit — ranked by what they actually claim." />
       </head>
       <body
-        className="min-h-full flex flex-col"
+        className="min-h-full flex flex-col pb-16 md:pb-0"
         style={{ fontFamily: "var(--font-inter), sans-serif" }}
       >
         {children}
+        <BottomNav />
       </body>
     </html>
   );

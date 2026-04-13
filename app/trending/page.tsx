@@ -71,29 +71,56 @@ const SENTIMENT_ARROW: Record<string, string> = {
   neutral: "—",
 };
 
+const SENTIMENT_BG: Record<string, string> = {
+  bullish: "#dcfce7",
+  bearish: "#fee2e2",
+  neutral: "#e0ebe6",
+};
+
 // ─── Sparkline (decorative SVG placeholder) ───────────────────────────────────
 
-function Sparkline() {
+function Sparkline({ color = "#006859" }: { color?: string }) {
+  const showFill = color === "#006859";
   return (
     <svg viewBox="0 0 220 56" fill="none" className="w-full" style={{ height: 56 }}>
       <path
         d="M0 44 C18 44 26 28 44 24 C62 20 70 36 90 30 C110 24 118 10 140 8 C158 6 172 18 192 14 C202 12 210 8 220 6"
-        stroke="#006859"
+        stroke={color}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+      {showFill && (
+        <>
+          <path
+            d="M0 44 C18 44 26 28 44 24 C62 20 70 36 90 30 C110 24 118 10 140 8 C158 6 172 18 192 14 C202 12 210 8 220 6 L220 56 L0 56 Z"
+            fill="url(#sparkGradient)"
+            opacity="0.15"
+          />
+          <defs>
+            <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#006859" />
+              <stop offset="100%" stopColor="#006859" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+        </>
+      )}
+    </svg>
+  );
+}
+
+// ─── Mini sparkline (for mobile list rows) ────────────────────────────────────
+
+function SparklineMini({ color = "#006859" }: { color?: string }) {
+  return (
+    <svg viewBox="0 0 80 28" fill="none" style={{ width: "100%", height: 28 }}>
       <path
-        d="M0 44 C18 44 26 28 44 24 C62 20 70 36 90 30 C110 24 118 10 140 8 C158 6 172 18 192 14 C202 12 210 8 220 6 L220 56 L0 56 Z"
-        fill="url(#sparkGradient)"
-        opacity="0.15"
+        d="M0 22 C6 22 10 14 16 12 C22 10 26 18 34 15 C42 12 46 5 54 4 C60 3 66 9 74 7 L80 5"
+        stroke={color}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <defs>
-        <linearGradient id="sparkGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#006859" />
-          <stop offset="100%" stopColor="#006859" stopOpacity="0" />
-        </linearGradient>
-      </defs>
     </svg>
   );
 }
@@ -102,12 +129,7 @@ function Sparkline() {
 
 function SentimentPill({ sentiment }: { sentiment: string }) {
   const color = SENTIMENT_COLOR[sentiment] ?? "#3d4946";
-  const bg =
-    sentiment === "bullish"
-      ? "#dcfce7"
-      : sentiment === "bearish"
-      ? "#fee2e2"
-      : "#e0ebe6";
+  const bg = SENTIMENT_BG[sentiment] ?? "#e0ebe6";
 
   return (
     <span
@@ -119,7 +141,7 @@ function SentimentPill({ sentiment }: { sentiment: string }) {
   );
 }
 
-// ─── Featured card (rank 1) ───────────────────────────────────────────────────
+// ─── Featured card (rank 1) — desktop ────────────────────────────────────────
 
 function FeaturedCard({ ticker }: { ticker: Ticker }) {
   return (
@@ -165,10 +187,7 @@ function FeaturedCard({ ticker }: { ticker: Ticker }) {
           className="flex flex-col items-center px-4 py-2.5 rounded-xl flex-1"
           style={{ backgroundColor: "#f5fbf7" }}
         >
-          <p
-            className="text-lg font-bold"
-            style={{ color: "#006859" }}
-          >
+          <p className="text-lg font-bold" style={{ color: "#006859" }}>
             {ticker.mentions}
           </p>
           <p className="type-label" style={{ color: "#3d4946" }}>
@@ -198,6 +217,141 @@ function FeaturedCard({ ticker }: { ticker: Ticker }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Mobile featured card (rank 1) — dark green ───────────────────────────────
+
+function MobileFeaturedCard({ ticker }: { ticker: Ticker }) {
+  const sentimentLabel = ticker.dominant_sentiment.toUpperCase();
+  const confidence = ticker.avg_confidence != null ? ` ${ticker.avg_confidence}%` : "";
+  const pillLabel = `${sentimentLabel}${confidence}`;
+
+  return (
+    <div
+      className="rounded-2xl p-5 flex flex-col gap-3 overflow-hidden"
+      style={{ backgroundColor: "#006859" }}
+    >
+      {/* Top row: label + sentiment+confidence pill */}
+      <div className="flex items-start justify-between gap-2">
+        <span
+          style={{
+            fontSize: "0.625rem",
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.65)",
+          }}
+        >
+          Top Signal
+        </span>
+        <span
+          className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.18)",
+            color: "#ffffff",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+          }}
+        >
+          {pillLabel}
+        </span>
+      </div>
+
+      {/* Ticker + mentions */}
+      <div className="flex flex-col gap-0.5">
+        <p
+          style={{
+            fontSize: "2.75rem",
+            fontWeight: 800,
+            color: "#ffffff",
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+          }}
+        >
+          ${ticker.ticker}
+        </p>
+        <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>
+          {ticker.mentions} mention{ticker.mentions !== 1 ? "s" : ""}
+        </p>
+      </div>
+
+      {/* Sparkline — white stroke */}
+      <div className="w-full mt-1">
+        <Sparkline color="rgba(255,255,255,0.55)" />
+      </div>
+    </div>
+  );
+}
+
+// ─── Mobile ticker row (ranks 2+) ────────────────────────────────────────────
+
+function MobileTickerRow({ ticker, rank }: { ticker: Ticker; rank: number }) {
+  const pct = ticker.price_change_percent;
+  const positive = pct !== null && pct >= 0;
+  const pctColor = pct === null ? "#3d4946" : positive ? "#006859" : "#ba1a1a";
+  const pctStr = pct !== null ? `${positive ? "+" : ""}${pct.toFixed(2)}%` : null;
+  const sentimentColor = SENTIMENT_COLOR[ticker.dominant_sentiment] ?? "#3d4946";
+  const sentimentBg = SENTIMENT_BG[ticker.dominant_sentiment] ?? "#e0ebe6";
+  const sparkColor = ticker.dominant_sentiment === "bearish" ? "#ba1a1a" : "#006859";
+
+  return (
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-xl"
+      style={{
+        backgroundColor: "#ffffff",
+        boxShadow: "0px 2px 8px rgba(23, 29, 27, 0.06)",
+      }}
+    >
+      {/* Left: rank + ticker name + sentiment pill + mention count */}
+      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p
+            className="text-xs font-bold flex-shrink-0"
+            style={{ color: "#9eb3ae", minWidth: 20 }}
+          >
+            {String(rank).padStart(2, "0")}
+          </p>
+          <p className="text-sm font-bold flex-shrink-0" style={{ color: "#171d1b" }}>
+            ${ticker.ticker}
+          </p>
+          <span
+            className="flex-shrink-0 rounded-full font-bold uppercase"
+            style={{
+              fontSize: "0.6rem",
+              letterSpacing: "0.07em",
+              padding: "2px 7px",
+              backgroundColor: sentimentBg,
+              color: sentimentColor,
+            }}
+          >
+            {ticker.dominant_sentiment}
+          </span>
+        </div>
+        <p className="text-xs" style={{ color: "#9eb3ae", paddingLeft: 20 }}>
+          {ticker.mentions} mention{ticker.mentions !== 1 ? "s" : ""}
+        </p>
+      </div>
+
+      {/* Middle: mini sparkline */}
+      <div className="flex-shrink-0" style={{ width: 64 }}>
+        <SparklineMini color={sparkColor} />
+      </div>
+
+      {/* Right: price change % */}
+      {pctStr ? (
+        <p
+          className="text-sm font-bold flex-shrink-0"
+          style={{ color: pctColor, minWidth: 56, textAlign: "right" }}
+        >
+          {positive ? "▲" : "▼"} {pctStr}
+        </p>
+      ) : (
+        <p className="text-xs flex-shrink-0" style={{ color: "#9eb3ae", minWidth: 56, textAlign: "right" }}>
+          —
+        </p>
+      )}
     </div>
   );
 }
@@ -514,7 +668,6 @@ function HeatmapSquare({
 }
 
 function HeatmapGrid({ tickers }: { tickers: Ticker[] }) {
-  // Slice to top 10 for the heatmap
   const items = tickers.slice(0, 10);
 
   return (
@@ -589,9 +742,9 @@ export default function TrendingPage() {
               </p>
             </div>
 
-            {/* View toggle */}
+            {/* View toggle — desktop only */}
             <div
-              className="flex items-center rounded-full p-1 flex-shrink-0 mt-2"
+              className="hidden md:flex items-center rounded-full p-1 flex-shrink-0 mt-2"
               style={{ backgroundColor: "#ffffff", border: "1px solid #e0ebe6" }}
             >
               <button
@@ -626,9 +779,38 @@ export default function TrendingPage() {
             </div>
           )}
 
-          {/* ── Heatmap view ── */}
+          {/* ── Mobile layout — always list view, hidden on desktop ── */}
+          {!error && (
+            <div className="md:hidden flex flex-col gap-3">
+              {loading ? (
+                <>
+                  <div className="rounded-2xl animate-pulse" style={{ backgroundColor: "#006859", opacity: 0.3, height: 200 }} />
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="rounded-xl animate-pulse h-16" style={{ backgroundColor: "#e0ebe6" }} />
+                  ))}
+                </>
+              ) : featured ? (
+                <>
+                  <MobileFeaturedCard ticker={featured} />
+                  {allTickers.slice(1).length > 0 && (
+                    <div className="flex flex-col gap-2 mt-1">
+                      {allTickers.slice(1).map((t, idx) => (
+                        <MobileTickerRow key={t.ticker} ticker={t} rank={idx + 2} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "#ffffff" }}>
+                  <p className="text-sm" style={{ color: "#3d4946" }}>No ticker data in the last 7 days. Run the sync route first.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Heatmap view — desktop only ── */}
           {!error && view === "heatmap" && (
-            <>
+            <div className="hidden md:block">
               {loading ? (
                 <div className="rounded-2xl animate-pulse" style={{ backgroundColor: "#e0ebe6", height: 480 }} />
               ) : allTickers.length > 0 ? (
@@ -641,25 +823,22 @@ export default function TrendingPage() {
                   <p className="text-sm" style={{ color: "#3d4946" }}>No ticker data in the last 7 days. Run the sync route first.</p>
                 </div>
               )}
-            </>
+            </div>
           )}
 
-          {/* ── Grid view ── */}
+          {/* ── Grid view — desktop only ── */}
           {!error && view === "grid" && (
-            <>
+            <div className="hidden md:block">
               {/* Featured + side list */}
-              <div className="flex flex-col md:flex-row gap-5" style={{ alignItems: "stretch" }}>
-                {/* Top/Left — featured (full width on mobile, 60% on desktop) */}
-                <div className="w-full md:flex-none" style={{ flex: "3", minWidth: 0 }}>
+              <div className="flex gap-5 mb-8" style={{ alignItems: "stretch" }}>
+                <div style={{ flex: "3", minWidth: 0 }}>
                   {loading || !featured ? (
                     <FeaturedSkeleton />
                   ) : (
                     <FeaturedCard ticker={featured} />
                   )}
                 </div>
-
-                {/* Bottom/Right — side list (full width on mobile, 40% on desktop) */}
-                <div className="w-full md:flex-none" style={{ flex: "2", minWidth: 0 }}>
+                <div style={{ flex: "2", minWidth: 0 }}>
                   {loading ? (
                     <div className="rounded-2xl animate-pulse h-full" style={{ backgroundColor: "#e0ebe6", minHeight: 280 }} />
                   ) : sideList.length > 0 ? (
@@ -673,22 +852,15 @@ export default function TrendingPage() {
                 <div className="flex flex-col gap-3">
                   <p className="type-label" style={{ color: "#3d4946" }}>All Tickers · Last 7 Days</p>
                   <FullTable tickers={allTickers} />
-                  <p
-                    className="md:hidden text-xs text-center"
-                    style={{ color: "#9eb3ae" }}
-                  >
-                    View full stats on desktop
-                  </p>
                 </div>
               )}
 
-              {/* Empty state */}
               {!loading && allTickers.length === 0 && (
                 <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "#ffffff" }}>
                   <p className="text-sm" style={{ color: "#3d4946" }}>No ticker data in the last 7 days. Run the sync route first.</p>
                 </div>
               )}
-            </>
+            </div>
           )}
 
         </div>
