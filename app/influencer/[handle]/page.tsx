@@ -106,13 +106,12 @@ function ProfileAvatar({ src, name }: { src: string | null; name: string }) {
     <img
       src={src}
       alt={name}
-      className="rounded-full object-cover flex-shrink-0"
-      style={{ width: 80, height: 80 }}
+      className="rounded-full object-cover flex-shrink-0 w-[60px] h-[60px] md:w-[80px] md:h-[80px]"
     />
   ) : (
     <div
-      className="rounded-full flex items-center justify-center flex-shrink-0 text-2xl font-bold text-white"
-      style={{ width: 80, height: 80, backgroundColor: "#006859" }}
+      className="rounded-full flex items-center justify-center flex-shrink-0 text-2xl font-bold text-white w-[60px] h-[60px] md:w-[80px] md:h-[80px]"
+      style={{ backgroundColor: "#006859" }}
     >
       {initials}
     </div>
@@ -140,7 +139,7 @@ function ProfileHeader({
       }}
     >
       {/* Top: avatar + name + follow button */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div className="flex items-center gap-4">
           <ProfileAvatar src={influencer.profile_image_url} name={influencer.display_name} />
           <div className="flex flex-col gap-0.5">
@@ -183,8 +182,17 @@ function ProfileHeader({
 
       {/* Stats row */}
       <div
-        className="grid gap-px rounded-xl overflow-hidden"
-        style={{ gridTemplateColumns: "repeat(4, 1fr)", backgroundColor: "#e0ebe6" }}
+        className="[&::-webkit-scrollbar]:hidden"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, minmax(110px, 1fr))",
+          gap: 1,
+          borderRadius: "0.75rem",
+          overflow: "auto",
+          backgroundColor: "#e0ebe6",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
       >
         {[
           { label: "Total Signals",  value: stats.total_posts },
@@ -246,18 +254,28 @@ function FilterPills({
   ];
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div
+      className="flex gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
+      style={{
+        overflowX: "auto",
+        WebkitOverflowScrolling: "touch",
+        paddingBottom: 4,
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
+    >
       {pills.map(({ key, label }) => {
         const isActive = active === key;
         return (
           <button
             key={key}
             onClick={() => onChange(key)}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
+            className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex-shrink-0"
             style={{
               backgroundColor: isActive ? "#006859" : "#ffffff",
               color: isActive ? "#ffffff" : "#3d4946",
               border: `1px solid ${isActive ? "#006859" : "#e0ebe6"}`,
+              whiteSpace: "nowrap",
             }}
             onMouseEnter={(e) => {
               if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2";
@@ -500,10 +518,10 @@ export default function InfluencerProfilePage({
 
           {/* Two-column body */}
           {!loading && !error && influencer && stats && (
-            <div className="flex gap-5 items-start">
+            <div className="flex flex-col md:flex-row gap-5 items-start">
 
-              {/* Left — posts feed (60%) */}
-              <div className="flex flex-col gap-4" style={{ flex: "3", minWidth: 0 }}>
+              {/* Top/Left — posts feed (full width on mobile, 60% on desktop) */}
+              <div className="flex flex-col gap-4 w-full md:w-auto md:flex-none" style={{ flex: "3", minWidth: 0 }}>
                 <FilterPills
                   active={activeFilter}
                   counts={categoryCounts}
@@ -524,8 +542,8 @@ export default function InfluencerProfilePage({
                 )}
               </div>
 
-              {/* Right — sidebar (40%) */}
-              <div style={{ flex: "2", minWidth: 0 }}>
+              {/* Bottom/Right — sidebar (full width on mobile, 40% on desktop) */}
+              <div className="w-full md:w-auto md:flex-none" style={{ flex: "2", minWidth: 0 }}>
                 <RightPanel stats={stats} />
               </div>
 

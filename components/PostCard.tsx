@@ -50,19 +50,18 @@ function Avatar({ src, name }: { src: string | null; name: string }) {
     .toUpperCase();
 
   return (
-    <div className="relative flex-shrink-0" style={{ width: 48, height: 48 }}>
+    <div className="relative flex-shrink-0 w-10 h-10 md:w-12 md:h-12">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={name}
-          className="rounded-full object-cover"
-          style={{ width: 48, height: 48 }}
+          className="rounded-full object-cover w-10 h-10 md:w-12 md:h-12"
         />
       ) : (
         <div
-          className="rounded-full flex items-center justify-center text-sm font-semibold text-white"
-          style={{ width: 48, height: 48, backgroundColor: "#006859" }}
+          className="rounded-full flex items-center justify-center text-sm font-semibold text-white w-10 h-10 md:w-12 md:h-12"
+          style={{ backgroundColor: "#006859" }}
         >
           {initials}
         </div>
@@ -89,7 +88,7 @@ export default function PostCard({ post }: { post: Post }) {
 
   return (
     <article
-      className="flex flex-col gap-3 p-6 rounded-2xl"
+      className="flex flex-col gap-3 p-4 md:p-6 rounded-2xl"
       style={{
         backgroundColor: "#ffffff",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
@@ -102,12 +101,12 @@ export default function PostCard({ post }: { post: Post }) {
           <Avatar src={profileImage} name={displayName} />
           <div className="min-w-0">
             <p
-              className="text-sm font-semibold truncate"
+              className="text-xs md:text-sm font-semibold truncate"
               style={{ color: "#171d1b" }}
             >
               {displayName}
             </p>
-            <p className="text-[11px] truncate" style={{ color: "#3d4946", opacity: 0.75 }}>
+            <p className="text-[10px] md:text-[11px] truncate" style={{ color: "#3d4946", opacity: 0.75 }}>
               {handle}
             </p>
           </div>
@@ -120,8 +119,17 @@ export default function PostCard({ post }: { post: Post }) {
         </p>
       </div>
 
-      {/* Row 2: Badges + tickers */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Row 2: Badges + tickers — horizontal scroll on mobile */}
+      <div
+        className="flex items-center gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
+        style={{
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          paddingBottom: 2,
+        }}
+      >
         <CategoryBadge category={post.category as Parameters<typeof CategoryBadge>[0]["category"]} />
         {post.sentiment && (
           <SentimentBadge sentiment={post.sentiment as Parameters<typeof SentimentBadge>[0]["sentiment"]} />
@@ -129,8 +137,8 @@ export default function PostCard({ post }: { post: Post }) {
         {post.ticker_symbols?.map((ticker) => (
           <span
             key={ticker}
-            className="text-xs font-medium px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: "#e0ebe6", color: "#171d1b" }}
+            className="text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: "#e0ebe6", color: "#171d1b", whiteSpace: "nowrap" }}
           >
             ${ticker}
           </span>
@@ -164,7 +172,7 @@ export default function PostCard({ post }: { post: Post }) {
       <div className="flex items-center justify-between pt-1">
         <div>
           {confidence != null && (
-            <p className="text-xs" style={{ color: "#3d4946" }}>
+            <p className="text-[0.75rem] md:text-xs" style={{ color: "#3d4946" }}>
               {confidence}% confident
             </p>
           )}
@@ -173,7 +181,7 @@ export default function PostCard({ post }: { post: Post }) {
           href={xUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-medium transition-colors"
+          className="text-[0.75rem] md:text-xs font-medium transition-colors"
           style={{ color: "#006859" }}
           onMouseEnter={(e) =>
             ((e.currentTarget as HTMLElement).style.color = "#004d42")

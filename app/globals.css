@@ -69,6 +69,17 @@ body {
   text-transform: uppercase;
 }
 
+/* Mobile typography overrides */
+@media (max-width: 768px) {
+  .type-display {
+    font-size: 1.75rem;
+  }
+
+  .type-body {
+    font-size: 0.875rem;
+  }
+}
+
 /* Card utility */
 .card {
   background-color: var(--color-white);

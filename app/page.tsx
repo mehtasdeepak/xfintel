@@ -180,7 +180,16 @@ export default function SignalFeedPage() {
             </div>
 
             {/* Filter bar */}
-            <div className="flex flex-wrap gap-2">
+            <div
+              className="flex gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
+              style={{
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
+                paddingBottom: 4,
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
               {FILTERS.map(({ label, value }) => {
                 const isActive = activeFilter === value;
                 return (
@@ -192,6 +201,8 @@ export default function SignalFeedPage() {
                       backgroundColor: isActive ? "#006859" : "#ffffff",
                       color: isActive ? "#ffffff" : "#3d4946",
                       border: isActive ? "1px solid #006859" : "1px solid #e0ebe6",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
                     }}
                     onMouseEnter={(e) => {
                       if (!isActive)

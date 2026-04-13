@@ -38,9 +38,10 @@ function PriceDisplay({
   return (
     <div className={`flex flex-col ${size === "lg" ? "items-start" : "items-end"} gap-0.5`}>
       <p
+        className={size === "lg" ? "text-[1.25rem] md:text-[1.5rem]" : ""}
         style={{
           fontWeight: 700,
-          fontSize: size === "lg" ? "1.5rem" : "0.875rem",
+          fontSize: size === "lg" ? undefined : "0.875rem",
           color: "#171d1b",
           lineHeight: 1.1,
         }}
@@ -138,8 +139,8 @@ function FeaturedCard({ ticker }: { ticker: Ticker }) {
             #1 Most Mentioned · 7 days
           </p>
           <p
+            className="text-[2.5rem] md:text-[3rem]"
             style={{
-              fontSize: "3rem",
               fontWeight: 800,
               letterSpacing: "-0.03em",
               lineHeight: 1,
@@ -647,9 +648,9 @@ export default function TrendingPage() {
           {!error && view === "grid" && (
             <>
               {/* Featured + side list */}
-              <div className="flex gap-5" style={{ alignItems: "stretch" }}>
-                {/* Left — featured (60%) */}
-                <div style={{ flex: "3", minWidth: 0 }}>
+              <div className="flex flex-col md:flex-row gap-5" style={{ alignItems: "stretch" }}>
+                {/* Top/Left — featured (full width on mobile, 60% on desktop) */}
+                <div className="w-full md:flex-none" style={{ flex: "3", minWidth: 0 }}>
                   {loading || !featured ? (
                     <FeaturedSkeleton />
                   ) : (
@@ -657,8 +658,8 @@ export default function TrendingPage() {
                   )}
                 </div>
 
-                {/* Right — side list (40%) */}
-                <div style={{ flex: "2", minWidth: 0 }}>
+                {/* Bottom/Right — side list (full width on mobile, 40% on desktop) */}
+                <div className="w-full md:flex-none" style={{ flex: "2", minWidth: 0 }}>
                   {loading ? (
                     <div className="rounded-2xl animate-pulse h-full" style={{ backgroundColor: "#e0ebe6", minHeight: 280 }} />
                   ) : sideList.length > 0 ? (
@@ -672,6 +673,12 @@ export default function TrendingPage() {
                 <div className="flex flex-col gap-3">
                   <p className="type-label" style={{ color: "#3d4946" }}>All Tickers · Last 7 Days</p>
                   <FullTable tickers={allTickers} />
+                  <p
+                    className="md:hidden text-xs text-center"
+                    style={{ color: "#9eb3ae" }}
+                  >
+                    View full stats on desktop
+                  </p>
                 </div>
               )}
 

@@ -104,11 +104,14 @@ function TransparencyBadge({ value }: { value: boolean }) {
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
     <div
-      className="flex-1 rounded-2xl p-6 flex flex-col gap-1"
+      className="w-full md:flex-1 rounded-2xl p-6 flex flex-col gap-1"
       style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)", borderRadius: "1rem" }}
     >
       <p className="type-label" style={{ color: "#3d4946" }}>{label}</p>
-      <p style={{ fontSize: "2rem", fontWeight: 700, letterSpacing: "-0.02em", color: "#006859", lineHeight: 1.1 }}>
+      <p
+        className="text-[2rem] md:text-[2rem]"
+        style={{ fontWeight: 700, letterSpacing: "-0.02em", color: "#006859", lineHeight: 1.1, wordBreak: "break-word" }}
+      >
         {value}
       </p>
     </div>
@@ -323,7 +326,7 @@ export default function LeaderboardPage() {
 
           {/* Summary stat cards */}
           {summary && (
-            <div className="flex gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <StatCard label="Influencers Tracked" value={summary.total_influencers} />
               <StatCard label="Signals This Week"   value={summary.total_signals_week.toLocaleString()} />
               <StatCard label="Most Active"         value={summary.most_active ?? "—"} />
@@ -412,6 +415,14 @@ export default function LeaderboardPage() {
               </div>
             )}
           </div>
+
+          {/* Mobile-only hint */}
+          <p
+            className="md:hidden text-xs text-center"
+            style={{ color: "#9eb3ae" }}
+          >
+            View full stats on desktop
+          </p>
 
         </div>
       </main>
