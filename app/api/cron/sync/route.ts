@@ -395,9 +395,9 @@ async function stepCategorizePosts(apiKey: string): Promise<Step3Result> {
   };
 }
 
-// ─── Handler ──────────────────────────────────────────────────────────────────
+// ─── Shared handler logic ─────────────────────────────────────────────────────
 
-export async function POST(req: NextRequest) {
+async function runSync(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -455,4 +455,14 @@ export async function POST(req: NextRequest) {
       categorize_posts: step3,
     },
   });
+}
+
+// ─── Handlers — GET (Vercel cron) + POST (manual trigger) ────────────────────
+
+export async function GET(req: NextRequest) {
+  return runSync(req);
+}
+
+export async function POST(req: NextRequest) {
+  return runSync(req);
 }
