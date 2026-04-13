@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,8 +9,6 @@ import {
   PieChart,
   Settings,
   LifeBuoy,
-  Menu,
-  X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -155,8 +152,6 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
 }
 
 export default function Sidebar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
   return (
     <>
       {/* Desktop sidebar */}
@@ -171,45 +166,8 @@ export default function Sidebar() {
         <SidebarContent />
       </aside>
 
-      {/* Mobile: hamburger trigger */}
-      <button
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg"
-        style={{ backgroundColor: "#ffffff", boxShadow: "var(--shadow-card)" }}
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open navigation"
-      >
-        <Menu size={20} style={{ color: "#006859" }} />
-      </button>
-
-      {/* Mobile: backdrop */}
-      {mobileOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-40"
-          style={{ backgroundColor: "rgba(23, 29, 27, 0.4)" }}
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* Mobile: drawer */}
-      <aside
-        className="md:hidden fixed left-0 top-0 h-screen z-50 transition-transform duration-300"
-        style={{
-          width: "220px",
-          backgroundColor: "#ffffff",
-          boxShadow: "2px 0px 8px rgba(23, 29, 27, 0.04)",
-          transform: mobileOpen ? "translateX(0)" : "translateX(-100%)",
-        }}
-      >
-        <button
-          className="absolute top-4 right-4 p-1.5 rounded-lg"
-          style={{ color: "#3d4946" }}
-          onClick={() => setMobileOpen(false)}
-          aria-label="Close navigation"
-        >
-          <X size={18} />
-        </button>
-        <SidebarContent onNavClick={() => setMobileOpen(false)} />
-      </aside>
+      {/* Mobile hamburger, backdrop and drawer are intentionally removed.
+          Mobile navigation is handled by BottomNav. */}
     </>
   );
 }

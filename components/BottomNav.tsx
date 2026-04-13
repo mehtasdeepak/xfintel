@@ -23,16 +23,6 @@ export default function BottomNav() {
         boxShadow: "0px -2px 8px rgba(23, 29, 27, 0.06)",
       }}
     >
-      {/* App icon — far left */}
-      <div className="flex items-center justify-center flex-shrink-0" style={{ width: 56 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/icons/icon-192.png"
-          alt="XFintel"
-          style={{ width: 32, height: 32, borderRadius: 8 }}
-        />
-      </div>
-
       {TABS.map(({ label, href, icon: Icon }) => {
         const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
         const color = isActive ? "#006859" : "#9eb3ae";

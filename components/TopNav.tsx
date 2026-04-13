@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Search, Bell } from "lucide-react";
 
 export default function TopNav() {
@@ -39,12 +40,14 @@ export default function TopNav() {
         >
           <Bell size={20} />
         </button>
-        <div
-          className="rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
+        {/* Avatar — tappable on mobile (→ /menu), inert on desktop */}
+        <Link
+          href="/menu"
+          className="rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 md:pointer-events-none"
           style={{ width: 34, height: 34, backgroundColor: "#006859" }}
         >
           D
-        </div>
+        </Link>
       </div>
     </header>
   );

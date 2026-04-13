@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Search, Bell } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import PostCard, { type Post } from "@/components/PostCard";
@@ -132,12 +133,14 @@ export default function SignalFeedPage() {
           >
             <Bell size={20} />
           </button>
-          <div
-            className="rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
+          {/* Avatar — tappable on mobile (→ /menu), inert on desktop */}
+          <Link
+            href="/menu"
+            className="rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 md:pointer-events-none"
             style={{ width: 34, height: 34, backgroundColor: "#006859" }}
           >
             D
-          </div>
+          </Link>
         </div>
       </header>
 
@@ -149,14 +152,14 @@ export default function SignalFeedPage() {
         <div className="flex gap-8 px-6 py-8 max-w-[1100px] mx-auto">
 
           {/* Feed column */}
-          <div className="flex-1 min-w-0 max-w-[640px] flex flex-col gap-6">
+          <div className="flex-1 min-w-0 max-w-[640px] flex flex-col gap-3 md:gap-6">
 
             {/* Header */}
-            <div className="flex flex-col gap-1 pt-8 md:pt-0">
-              <h1 className="type-display" style={{ color: "#171d1b" }}>
+            <div className="flex flex-col gap-1 pt-4 md:pt-0">
+              <h1 className="type-display text-[1.5rem] md:text-[2.5rem]" style={{ color: "#171d1b" }}>
                 Signal Feed
               </h1>
-              <p className="type-body" style={{ color: "#3d4946" }}>
+              <p className="type-body text-[0.875rem] md:text-[1rem]" style={{ color: "#3d4946" }}>
                 Real-time accountability for financial influencers
               </p>
               {formattedTime && (
