@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/sync-posts",
       "schedule": "*/15 * * * *"
-    },
-    {
-      "path": "/api/cron/categorize",
-      "schedule": "*/15 * * * *"
     }
   ]
 }
