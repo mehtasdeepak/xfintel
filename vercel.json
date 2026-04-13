@@ -1,7 +1,15 @@
 {
   "crons": [
     {
-      "path": "/api/cron/sync",
+      "path": "/api/cron/sync-influencers",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/sync-posts",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/categorize",
       "schedule": "*/15 * * * *"
     }
   ]
