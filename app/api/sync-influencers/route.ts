@@ -19,6 +19,25 @@ const HANDLES = [
   "mvcinvesting",
   "anandragn",
   "RKLBMan",
+  // Added batch 2
+  "wealthmatica",
+  "ZaStocks",
+  "Mr_Derivatives",
+  "itschrisray",
+  "ParadisLabs",
+  "illyquid",
+  "damnang2",
+  "PhotonCap",
+  "pepemoonboy",
+  "crux_capital_",
+  "Frenchie_",
+  "Blinklebloop",
+  "KawzInvests",
+  "degentradingLSD",
+  "michaelsikand",
+  "Kaizen_Investor",
+  "Yeah_Dave",
+  "TheValueist",
 ];
 
 // X API v2 — look up up to 100 usernames in one request
