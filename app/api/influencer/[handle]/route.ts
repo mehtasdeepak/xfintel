@@ -62,6 +62,24 @@ export async function GET(
     .slice(0, 5)
     .map(([ticker, count]) => ({ ticker, count }));
 
+  // ── Holdings (explicit ownership language only) ───────────────────────────
+
+  const OWNERSHIP_RE = /\b(hold|holding|bought|added|own|long|position|averaging)\b/i;
+  const HOLDING_CATS = new Set(["portfolio", "trade_call"]);
+
+  const holdingsMap = new Map<string, number>();
+  for (const post of allPosts) {
+    if (!HOLDING_CATS.has(post.category)) continue;
+    if (!OWNERSHIP_RE.test(post.content ?? "")) continue;
+    for (const ticker of post.ticker_symbols ?? []) {
+      if (ticker) holdingsMap.set(ticker, (holdingsMap.get(ticker) ?? 0) + 1);
+    }
+  }
+  const holdings = Array.from(holdingsMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([ticker, count]) => ({ ticker, count }));
+
   // ── Category breakdown ────────────────────────────────────────────────────
 
   const catMap = new Map<string, number>();
@@ -105,6 +123,7 @@ export async function GET(
       category_breakdown,
       most_active_time,
     },
+    holdings,
     posts: allPosts,
   });
 }

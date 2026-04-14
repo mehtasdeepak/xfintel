@@ -39,6 +39,11 @@ type Stats = {
   most_active_time: "morning" | "afternoon" | "evening";
 };
 
+type Holding = {
+  ticker: string;
+  count: number;
+};
+
 type RawPost = {
   id: string;
   content: string;
@@ -300,11 +305,96 @@ function FilterPills({
   );
 }
 
+// ─── Holdings pie chart ───────────────────────────────────────────────────────
+
+const PIE_COLORS = [
+  "#006859", "#0891b2", "#7c3aed", "#d97706",
+  "#b45309", "#dc2626", "#059669", "#6366f1",
+];
+
+function HoldingsPieChart({ holdings }: { holdings: Holding[] }) {
+  if (holdings.length === 0) {
+    return (
+      <p className="text-sm text-center py-4" style={{ color: "#3d4946" }}>
+        No explicit holdings found in recent posts
+      </p>
+    );
+  }
+
+  const total = holdings.reduce((s, h) => s + h.count, 0);
+
+  // Build conic-gradient stops
+  let cumulative = 0;
+  const stops = holdings.map((h, i) => {
+    const pct = (h.count / total) * 100;
+    const start = cumulative;
+    cumulative += pct;
+    return `${PIE_COLORS[i % PIE_COLORS.length]} ${start.toFixed(2)}% ${cumulative.toFixed(2)}%`;
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      {/* Pie */}
+      <div
+        className="rounded-full flex-shrink-0"
+        style={{
+          width: 160,
+          height: 160,
+          background: `conic-gradient(${stops.join(", ")})`,
+        }}
+      />
+
+      {/* Legend */}
+      <div className="w-full flex flex-col gap-1.5">
+        {holdings.map((h, i) => (
+          <div key={h.ticker} className="flex items-center gap-2">
+            <span
+              className="rounded-full flex-shrink-0"
+              style={{ width: 10, height: 10, backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
+            />
+            <span className="text-xs font-semibold flex-1" style={{ color: "#171d1b" }}>
+              ${h.ticker}
+            </span>
+            <span className="text-xs" style={{ color: "#3d4946" }}>
+              {h.count} mention{h.count !== 1 ? "s" : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Disclaimer */}
+      <p className="text-[10px] text-center leading-relaxed" style={{ color: "#9eb3ae" }}>
+        Based on public posts only. Not verified financial data.
+      </p>
+    </div>
+  );
+}
+
 // ─── Right panel ─────────────────────────────────────────────────────────────
 
-function RightPanel({ stats }: { stats: Stats }) {
+function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) {
   return (
     <div className="flex flex-col gap-5">
+
+      {/* Claimed holdings pie chart */}
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
+      >
+        <div className="px-5 py-3 flex items-center gap-2" style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}>
+          <p className="type-label" style={{ color: "#3d4946" }}>Claimed Holdings</p>
+          <span
+            className="text-xs rounded-full flex items-center justify-center cursor-default flex-shrink-0"
+            style={{ width: 16, height: 16, backgroundColor: "#e0ebe6", color: "#3d4946", fontSize: 10, fontWeight: 700 }}
+            title="Based on explicit buy/hold statements in posts"
+          >
+            i
+          </span>
+        </div>
+        <div className="p-4">
+          <HoldingsPieChart holdings={holdings} />
+        </div>
+      </div>
 
       {/* Category breakdown */}
       <div
@@ -435,6 +525,7 @@ export default function InfluencerProfilePage({
 
   const [influencer, setInfluencer] = useState<Influencer | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [holdings, setHoldings] = useState<Holding[]>([]);
   const [rawPosts, setRawPosts] = useState<RawPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -447,6 +538,7 @@ export default function InfluencerProfilePage({
         if (d.error) { setError(d.error); return; }
         setInfluencer(d.influencer);
         setStats(d.stats);
+        setHoldings(d.holdings ?? []);
         setRawPosts(d.posts ?? []);
       })
       .catch((e) => setError(e.message))
@@ -544,7 +636,7 @@ export default function InfluencerProfilePage({
 
               {/* Bottom/Right — sidebar (full width on mobile, 40% on desktop) */}
               <div className="w-full md:w-auto md:flex-none" style={{ flex: "2", minWidth: 0 }}>
-                <RightPanel stats={stats} />
+                <RightPanel stats={stats} holdings={holdings} />
               </div>
 
             </div>
