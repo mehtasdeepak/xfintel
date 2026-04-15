@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-export const maxDuration = 300;
+export const maxDuration = 120;
+
+// Influencer profiles are synced separately by /api/cron/sync-influencers (daily).
+// This route only pulls posts + categorizes. Kept lean to stay under timeout.
+
+const INFLUENCER_BATCH = 20;   // influencers per run (rotates through full list)
+const POST_WINDOW_MS  = 30 * 60 * 1000; // 30-minute lookback
+const MAX_CAT_BATCHES = 2;     // max categorization batches per run
 
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
@@ -154,7 +161,7 @@ async function categorizeNoisePosts(
     .eq("category", "noise");
   console.log(`[categorize] noise posts pending: ${noiseCount ?? "unknown"}`);
 
-  while (Date.now() < deadline) {
+  while (Date.now() < deadline && batchesRun < MAX_CAT_BATCHES) {
     const { data: posts, error: fetchError } = await supabase
       .from("posts")
       .select("id, content, ticker_symbols")
@@ -171,7 +178,7 @@ async function categorizeNoisePosts(
     }
 
     batchesRun++;
-    console.log(`[categorize] starting batch ${batchesRun}, categorizing ${posts.length} posts`);
+    console.log(`[categorize] starting batch ${batchesRun}/${MAX_CAT_BATCHES}, categorizing ${posts.length} posts`);
 
     for (let i = 0; i < posts.length; i++) {
       if (Date.now() >= deadline) {
@@ -260,21 +267,27 @@ async function handler(req: NextRequest) {
   console.log("[sync-posts] env vars present, starting sync");
 
   const t0 = Date.now();
-  // Reserve the last 30s of maxDuration for categorization safety margin
-  const categorizationDeadline = t0 + (maxDuration - 30) * 1000;
-  const startTime = new Date(t0 - 2 * 60 * 60 * 1000).toISOString();
+  // Reserve last 60s of maxDuration for categorization
+  const categorizationDeadline = t0 + (maxDuration - 60) * 1000;
+  const startTime = new Date(t0 - POST_WINDOW_MS).toISOString();
 
-  // ── Step 1: Sync posts ──────────────────────────────────────────────────────
+  // ── Step 1: Select 20 influencers for this run (rotating window) ──────────
+  //
+  // Deterministic rotation: order all active influencers by x_handle (stable),
+  // derive a batch index from the current 15-min slot, slice INFLUENCER_BATCH.
+  // With 35 influencers and batch=20: slot 0 → [0..19], slot 1 → [20..34+wrap],
+  // cycling every 2 runs (30 min) so all 35 are covered within 30 minutes.
 
-  const { data: influencers, error: dbError } = await supabase
+  const { data: allInfluencers, error: dbError } = await supabase
     .from("influencers")
     .select("id, x_handle, display_name")
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .order("x_handle", { ascending: true });
 
   if (dbError) {
     return NextResponse.json({ error: `Supabase fetch error: ${dbError.message}` }, { status: 500 });
   }
-  if (!influencers || influencers.length === 0) {
+  if (!allInfluencers || allInfluencers.length === 0) {
     return NextResponse.json({
       ok: true,
       total_posts_synced: 0,
@@ -284,7 +297,23 @@ async function handler(req: NextRequest) {
     });
   }
 
-  const usernames = (influencers as InfluencerRow[]).map((i) => i.x_handle.replace(/^@/, ""));
+  const total = allInfluencers.length;
+  // Each 15-min cron slot gets a unique index
+  const slotIndex = Math.floor(t0 / (15 * 60 * 1000));
+  const offset = (slotIndex * INFLUENCER_BATCH) % total;
+
+  // Slice with wrap-around so we always get exactly INFLUENCER_BATCH (or total if smaller)
+  const batchSize = Math.min(INFLUENCER_BATCH, total);
+  const influencers: InfluencerRow[] = [];
+  for (let i = 0; i < batchSize; i++) {
+    influencers.push(allInfluencers[(offset + i) % total] as InfluencerRow);
+  }
+
+  console.log(`[sync-posts] slot ${slotIndex}, offset ${offset}, syncing ${influencers.length}/${total} influencers`);
+
+  // ── Step 2: Resolve X user IDs for this batch only ────────────────────────
+
+  const usernames = influencers.map((i) => i.x_handle.replace(/^@/, ""));
   const usersRes = await fetch(
     `https://api.twitter.com/2/users/by?usernames=${usernames.join(",")}&user.fields=id`,
     { headers: { Authorization: `Bearer ${bearerToken}` } }
@@ -299,10 +328,12 @@ async function handler(req: NextRequest) {
     xIdByUsername.set(u.username.toLowerCase(), u.id);
   }
 
+  // ── Step 3: Pull posts for each influencer in batch ───────────────────────
+
   const breakdown: { influencer: string; posts_synced: number; error?: string }[] = [];
 
-  for (let i = 0; i < (influencers as InfluencerRow[]).length; i++) {
-    const inf = (influencers as InfluencerRow[])[i];
+  for (let i = 0; i < influencers.length; i++) {
+    const inf = influencers[i];
     const username = inf.x_handle.replace(/^@/, "").toLowerCase();
     const xUserId = xIdByUsername.get(username);
 
@@ -348,13 +379,17 @@ async function handler(req: NextRequest) {
   }
 
   const totalSynced = breakdown.reduce((sum, b) => sum + b.posts_synced, 0);
+  console.log(`[sync-posts] posts synced: ${totalSynced}`);
 
-  // ── Step 2: Categorize all noise posts ────────────────────────────────────
+  // ── Step 4: Categorize noise posts (max 2 batches of 30) ─────────────────
 
   const categorization = await categorizeNoisePosts(anthropicKey, categorizationDeadline);
 
   return NextResponse.json({
     ok: true,
+    slot_index: slotIndex,
+    influencers_in_batch: influencers.length,
+    total_influencers: total,
     total_posts_synced: totalSynced,
     influencer_breakdown: breakdown,
     categorization,
