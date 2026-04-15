@@ -147,6 +147,13 @@ async function categorizeNoisePosts(
   let failedCount = 0;
   let batchesRun = 0;
 
+  // Log total noise posts before starting
+  const { count: noiseCount } = await supabase
+    .from("posts")
+    .select("*", { count: "exact", head: true })
+    .eq("category", "noise");
+  console.log(`[categorize] noise posts pending: ${noiseCount ?? "unknown"}`);
+
   while (Date.now() < deadline) {
     const { data: posts, error: fetchError } = await supabase
       .from("posts")
@@ -154,12 +161,23 @@ async function categorizeNoisePosts(
       .eq("category", "noise")
       .limit(BATCH_SIZE);
 
-    if (fetchError || !posts || posts.length === 0) break;
+    if (fetchError) {
+      console.error(`[categorize] supabase fetch error: ${fetchError.message}`);
+      break;
+    }
+    if (!posts || posts.length === 0) {
+      console.log(`[categorize] no noise posts remaining, stopping`);
+      break;
+    }
 
     batchesRun++;
+    console.log(`[categorize] starting batch ${batchesRun}, categorizing ${posts.length} posts`);
 
     for (let i = 0; i < posts.length; i++) {
-      if (Date.now() >= deadline) break;
+      if (Date.now() >= deadline) {
+        console.log(`[categorize] deadline reached, stopping mid-batch at post ${i}/${posts.length}`);
+        break;
+      }
       if (i > 0) await sleep(POST_DELAY_MS);
 
       const post = posts[i] as { id: string; content: string; ticker_symbols: string[] };
@@ -167,7 +185,9 @@ async function categorizeNoisePosts(
 
       try {
         result = await classifyPost(post.content, apiKey);
-      } catch {
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`[categorize] classify error for post ${post.id}: ${msg}`);
         failedCount++;
         continue;
       }
@@ -189,6 +209,7 @@ async function categorizeNoisePosts(
         .eq("id", post.id);
 
       if (updateError) {
+        console.error(`[categorize] supabase update error for post ${post.id}: ${updateError.message}`);
         failedCount++;
         continue;
       }
@@ -202,6 +223,8 @@ async function categorizeNoisePosts(
     // If the batch wasn't full, no more noise posts remain
     if (posts.length < BATCH_SIZE) break;
   }
+
+  console.log(`[categorize] done — categorized: ${totalCategorized}, failed: ${failedCount}, batches: ${batchesRun}`);
 
   return {
     total_categorized: totalCategorized,
@@ -227,11 +250,14 @@ async function handler(req: NextRequest) {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
   if (!bearerToken) {
+    console.error("[sync-posts] X_BEARER_TOKEN not found");
     return NextResponse.json({ error: "X_BEARER_TOKEN is not set" }, { status: 500 });
   }
   if (!anthropicKey) {
+    console.error("[sync-posts] ANTHROPIC_API_KEY not found");
     return NextResponse.json({ error: "ANTHROPIC_API_KEY is not set" }, { status: 500 });
   }
+  console.log("[sync-posts] env vars present, starting sync");
 
   const t0 = Date.now();
   // Reserve the last 30s of maxDuration for categorization safety margin
