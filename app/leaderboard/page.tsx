@@ -48,7 +48,7 @@ const ROW_BG: Record<number, string> = {
   3: "#fafaf9",
 };
 
-const FREE_TIER_LIMIT = 10;
+const FREE_TIER_LIMIT = 20;
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 

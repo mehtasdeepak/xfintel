@@ -38,6 +38,16 @@ const HANDLES = [
   "Kaizen_Investor",
   "Yeah_Dave",
   "TheValueist",
+  // Added batch 3
+  "Venu_7_",
+  "BlackPantherCap",
+  "CaesarCapitalz",
+  "GrowthThesis",
+  "Sam_Badawi",
+  "spacanpanman",
+  "TheLongInvest",
+  "bjmtweets",
+  "investingluc",
 ];
 
 // X API v2 — look up up to 100 usernames in one request
