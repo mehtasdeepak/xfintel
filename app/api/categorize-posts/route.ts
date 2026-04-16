@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
 // Prerequisites — run in Supabase SQL editor before using this route:
 //   alter table posts add column if not exists sentiment text check (sentiment in ('bullish', 'bearish', 'neutral'));
 //   alter table posts add column if not exists confidence numeric(3,2);
-// Also add GOOGLE_AI_API_KEY to .env.local
+// Also add OPENAI_API_KEY to .env.local
 
 const POST_DELAY_MS = 300;
 
@@ -65,10 +65,13 @@ async function classifyPost(
   content: string,
   apiKey: string
 ): Promise<{ result: ClaudeResult; rawResponse: string }> {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const geminiResult = await model.generateContent(buildPrompt(content));
-  const rawResponse = geminiResult.response.text();
+  const openai = new OpenAI({ apiKey });
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: buildPrompt(content) }],
+    max_tokens: 200,
+  });
+  const rawResponse = completion.choices[0].message.content ?? "";
 
   // Strip markdown code fences if present
   const cleaned = rawResponse.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
@@ -98,10 +101,10 @@ function sleep(ms: number) {
 }
 
 export async function GET(req: NextRequest) {
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "GOOGLE_AI_API_KEY environment variable is not set" },
+      { error: "OPENAI_API_KEY environment variable is not set" },
       { status: 500 }
     );
   }

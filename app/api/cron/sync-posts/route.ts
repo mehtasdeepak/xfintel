@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
 export const maxDuration = 120;
 
@@ -112,10 +112,13 @@ Respond with ONLY a valid JSON object in this exact format, nothing else:
 }
 
 async function classifyPost(content: string, apiKey: string): Promise<ClaudeResult> {
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const result = await model.generateContent(buildPrompt(content));
-  const raw = result.response.text();
+  const openai = new OpenAI({ apiKey });
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: buildPrompt(content) }],
+    max_tokens: 200,
+  });
+  const raw = completion.choices[0].message.content ?? "";
   const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
   const parsed = JSON.parse(cleaned) as ClaudeResult;
 
@@ -240,15 +243,15 @@ async function handler(req: NextRequest) {
   }
 
   const bearerToken = process.env.X_BEARER_TOKEN;
-  const googleAIKey = process.env.GOOGLE_AI_API_KEY;
+  const openAIKey = process.env.OPENAI_API_KEY;
 
   if (!bearerToken) {
     console.error("[sync-posts] X_BEARER_TOKEN not found");
     return NextResponse.json({ error: "X_BEARER_TOKEN is not set" }, { status: 500 });
   }
-  if (!googleAIKey) {
-    console.error("[sync-posts] GOOGLE_AI_API_KEY not found");
-    return NextResponse.json({ error: "GOOGLE_AI_API_KEY is not set" }, { status: 500 });
+  if (!openAIKey) {
+    console.error("[sync-posts] OPENAI_API_KEY not found");
+    return NextResponse.json({ error: "OPENAI_API_KEY is not set" }, { status: 500 });
   }
   console.log("[sync-posts] env vars present, starting sync");
 
@@ -369,7 +372,7 @@ async function handler(req: NextRequest) {
 
   // ── Step 4: Categorize noise posts (max 2 batches of 30) ─────────────────
 
-  const categorization = await categorizeNoisePosts(googleAIKey, categorizationDeadline);
+  const categorization = await categorizeNoisePosts(openAIKey, categorizationDeadline);
 
   return NextResponse.json({
     ok: true,
