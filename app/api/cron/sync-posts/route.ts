@@ -113,7 +113,7 @@ Respond with ONLY a valid JSON object in this exact format, nothing else:
 
 async function classifyPost(content: string, apiKey: string): Promise<ClaudeResult> {
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result = await model.generateContent(buildPrompt(content));
   const raw = result.response.text();
   const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
