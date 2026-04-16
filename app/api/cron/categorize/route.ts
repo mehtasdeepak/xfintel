@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import OpenAI from "openai";
 
 export const maxDuration = 120;
 
@@ -13,7 +14,6 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
 const CATEGORIZE_LIMIT = 30;
 const POST_DELAY_MS = 300;
 
@@ -58,24 +58,13 @@ Respond with ONLY a valid JSON object in this exact format, nothing else:
 }
 
 async function classifyPost(content: string, apiKey: string): Promise<ClaudeResult> {
-  const res = await fetch(CLAUDE_API_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 150,
-      messages: [{ role: "user", content: buildPrompt(content) }],
-    }),
+  const openai = new OpenAI({ apiKey });
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: buildPrompt(content) }],
+    max_tokens: 200,
   });
-
-  if (!res.ok) throw new Error(`Claude API ${res.status}: ${await res.text()}`);
-
-  const body = await res.json();
-  const raw: string = body.content?.[0]?.text ?? "";
+  const raw = completion.choices[0].message.content ?? "";
   const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
   const parsed = JSON.parse(cleaned) as ClaudeResult;
 
@@ -94,9 +83,9 @@ async function handler(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY is not set" }, { status: 500 });
+    return NextResponse.json({ error: "OPENAI_API_KEY is not set" }, { status: 500 });
   }
 
   const t0 = Date.now();
