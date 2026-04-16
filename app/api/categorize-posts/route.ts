@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Prerequisites — run in Supabase SQL editor before using this route:
 //   alter table posts add column if not exists sentiment text check (sentiment in ('bullish', 'bearish', 'neutral'));
 //   alter table posts add column if not exists confidence numeric(3,2);
-// Also add ANTHROPIC_API_KEY to .env.local
+// Also add GOOGLE_AI_API_KEY to .env.local
 
-const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-haiku-4-5-20251001";
 const POST_DELAY_MS = 300;
 
 type PostRow = {
@@ -66,27 +65,10 @@ async function classifyPost(
   content: string,
   apiKey: string
 ): Promise<{ result: ClaudeResult; rawResponse: string }> {
-  const res = await fetch(CLAUDE_API_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 150,
-      messages: [{ role: "user", content: buildPrompt(content) }],
-    }),
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Claude API ${res.status}: ${errorText}`);
-  }
-
-  const body = await res.json();
-  const rawResponse: string = body.content?.[0]?.text ?? "";
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const geminiResult = await model.generateContent(buildPrompt(content));
+  const rawResponse = geminiResult.response.text();
 
   // Strip markdown code fences if present
   const cleaned = rawResponse.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
@@ -116,10 +98,10 @@ function sleep(ms: number) {
 }
 
 export async function GET(req: NextRequest) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GOOGLE_AI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY environment variable is not set" },
+      { error: "GOOGLE_AI_API_KEY environment variable is not set" },
       { status: 500 }
     );
   }

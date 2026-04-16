@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const maxDuration = 120;
 
@@ -58,7 +59,6 @@ async function fetchRecentTweets(
 
 // ─── Categorization ───────────────────────────────────────────────────────────
 
-const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
 const BATCH_SIZE = 30;
 const POST_DELAY_MS = 300;
 
@@ -112,24 +112,10 @@ Respond with ONLY a valid JSON object in this exact format, nothing else:
 }
 
 async function classifyPost(content: string, apiKey: string): Promise<ClaudeResult> {
-  const res = await fetch(CLAUDE_API_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 150,
-      messages: [{ role: "user", content: buildPrompt(content) }],
-    }),
-  });
-
-  if (!res.ok) throw new Error(`Claude API ${res.status}: ${await res.text()}`);
-
-  const body = await res.json();
-  const raw: string = body.content?.[0]?.text ?? "";
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const result = await model.generateContent(buildPrompt(content));
+  const raw = result.response.text();
   const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
   const parsed = JSON.parse(cleaned) as ClaudeResult;
 
@@ -254,15 +240,15 @@ async function handler(req: NextRequest) {
   }
 
   const bearerToken = process.env.X_BEARER_TOKEN;
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const googleAIKey = process.env.GOOGLE_AI_API_KEY;
 
   if (!bearerToken) {
     console.error("[sync-posts] X_BEARER_TOKEN not found");
     return NextResponse.json({ error: "X_BEARER_TOKEN is not set" }, { status: 500 });
   }
-  if (!anthropicKey) {
-    console.error("[sync-posts] ANTHROPIC_API_KEY not found");
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY is not set" }, { status: 500 });
+  if (!googleAIKey) {
+    console.error("[sync-posts] GOOGLE_AI_API_KEY not found");
+    return NextResponse.json({ error: "GOOGLE_AI_API_KEY is not set" }, { status: 500 });
   }
   console.log("[sync-posts] env vars present, starting sync");
 
@@ -383,7 +369,7 @@ async function handler(req: NextRequest) {
 
   // ── Step 4: Categorize noise posts (max 2 batches of 30) ─────────────────
 
-  const categorization = await categorizeNoisePosts(anthropicKey, categorizationDeadline);
+  const categorization = await categorizeNoisePosts(googleAIKey, categorizationDeadline);
 
   return NextResponse.json({
     ok: true,
