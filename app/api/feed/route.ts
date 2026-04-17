@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const DEFAULT_LIMIT = 20;
 
 export async function GET(req: NextRequest) {
@@ -49,8 +52,8 @@ export async function GET(req: NextRequest) {
     influencer: Array.isArray(influencers) ? influencers[0] ?? null : influencers,
   }));
 
-  return NextResponse.json({
-    posts,
-    has_more: posts.length === limit,
-  });
+  return NextResponse.json(
+    { posts, has_more: posts.length === limit },
+    { headers: { 'Cache-Control': 'no-store, max-age=0, must-revalidate' } }
+  );
 }
