@@ -546,9 +546,19 @@ export default function PortfolioPage() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-3">
-                    {influencerHoldings.map((inf) => (
+                    {influencerHoldings.slice(0, 20).map((inf) => (
                       <InfluencerHoldingRow key={inf.x_handle} inf={inf} />
                     ))}
+                    <p className="text-xs text-center mt-1" style={{ color: "#3d4946" }}>
+                      Showing top 20 influencers by holdings activity. View individual profiles on the{" "}
+                      <a
+                        href="/leaderboard"
+                        style={{ color: "#006859", textDecoration: "underline" }}
+                      >
+                        Leaderboard
+                      </a>
+                      {" "}for full history →
+                    </p>
                   </div>
                 )}
               </div>

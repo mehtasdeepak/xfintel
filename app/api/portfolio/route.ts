@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const SIGNAL_CATEGORIES = ["portfolio", "trade_call", "watchlist", "position_update"];
 
 // Known company names for common tickers
@@ -263,18 +266,21 @@ export async function GET() {
     influencer: Array.isArray(influencers) ? influencers[0] ?? null : influencers,
   }));
 
-  return NextResponse.json({
-    stats: {
-      trade_calls: tradeCallCount ?? 0,
-      portfolio_posts: portfolioCount ?? 0,
-      position_updates: positionUpdateCount ?? 0,
-      exits: exitCount ?? 0,
+  return NextResponse.json(
+    {
+      stats: {
+        trade_calls: tradeCallCount ?? 0,
+        portfolio_posts: portfolioCount ?? 0,
+        position_updates: positionUpdateCount ?? 0,
+        exits: exitCount ?? 0,
+      },
+      tickers,
+      most_convicted: mostConvicted,
+      consensus_buys: consensusBuys,
+      recent_exits: recentExits,
+      recent_activity: recentActivity,
+      influencer_holdings: influencerHoldings,
     },
-    tickers,
-    most_convicted: mostConvicted,
-    consensus_buys: consensusBuys,
-    recent_exits: recentExits,
-    recent_activity: recentActivity,
-    influencer_holdings: influencerHoldings,
-  });
+    { headers: { 'Cache-Control': 'no-store, max-age=0, must-revalidate' } }
+  );
 }
