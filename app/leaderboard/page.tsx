@@ -348,14 +348,15 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
 // ─── Mobile rank row (ranks 4+) ───────────────────────────────────────────────
 
 function MobileRankRow({ inf, rank }: { inf: Influencer; rank: number }) {
+  const handle = inf.x_handle.replace(/^@/, "");
   return (
-    <a
-      href={`/influencer/${inf.x_handle.replace(/^@/, "")}`}
-      className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors"
+    <div
+      className="flex items-center gap-3 px-4 rounded-xl"
       style={{
+        paddingTop: 20,
+        paddingBottom: 20,
         backgroundColor: "#ffffff",
         boxShadow: "0px 2px 8px rgba(23, 29, 27, 0.06)",
-        textDecoration: "none",
       }}
     >
       <p
@@ -366,15 +367,28 @@ function MobileRankRow({ inf, rank }: { inf: Influencer; rank: number }) {
       </p>
       <Avatar src={inf.profile_image_url} name={inf.display_name} size={36} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold truncate" style={{ color: "#171d1b" }}>
+        <p className="text-sm font-semibold" style={{ color: "#171d1b" }}>
           {inf.display_name}
         </p>
         <p className="text-xs" style={{ color: "#3d4946" }}>
           {inf.total_signals} signals
         </p>
       </div>
-      <WinRatePill value={inf.win_rate} />
-    </a>
+      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+        {inf.win_rate != null && inf.win_rate > 0 ? (
+          <WinRatePill value={inf.win_rate} />
+        ) : (
+          <span className="text-xs" style={{ color: "#9eb3ae" }}>No Trades</span>
+        )}
+        <a
+          href={`/influencer/${handle}`}
+          className="text-xs font-medium"
+          style={{ color: "#006859" }}
+        >
+          View Profile →
+        </a>
+      </div>
+    </div>
   );
 }
 
