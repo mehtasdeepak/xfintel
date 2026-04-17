@@ -99,6 +99,7 @@ async function handler(req: NextRequest) {
     .from("posts")
     .select("id, content, ticker_symbols")
     .eq("category", "noise")
+    .order("posted_at", { ascending: false })
     .limit(CATEGORIZE_LIMIT);
 
   if (fetchError) {

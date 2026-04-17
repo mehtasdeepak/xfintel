@@ -155,6 +155,7 @@ async function categorizeNoisePosts(
       .from("posts")
       .select("id, content, ticker_symbols")
       .eq("category", "noise")
+      .order("posted_at", { ascending: false })
       .limit(BATCH_SIZE);
 
     if (fetchError) {
