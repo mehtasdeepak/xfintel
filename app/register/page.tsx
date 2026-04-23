@@ -235,6 +235,7 @@ export default function RegisterPage() {
     });
     if (error) {
       console.error(error);
+      alert(`Error: ${error.message} | Status: ${error.status} | Code: ${JSON.stringify(error)}`);
       setLoading(null);
     }
   };
