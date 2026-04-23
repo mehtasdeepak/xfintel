@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const publicPaths = ['/', '/landing', '/register', '/onboarding', '/login', '/auth']
-  const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith('/auth'))
+  const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith('/auth')) || pathname.startsWith('/api/cron')
 
   let response = NextResponse.next({ request })
   const supabase = createServerClient(
