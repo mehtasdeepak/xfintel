@@ -6,6 +6,7 @@ import { Search, Bell } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import PostCard, { type Post } from "@/components/PostCard";
 import RightPanel from "@/components/RightPanel";
+import UserMenu from "@/components/UserMenu";
 
 const LIMIT = 20;
 
@@ -124,13 +125,19 @@ export default function SignalFeedPage() {
           >
             <Bell size={20} />
           </button>
+          {/* Mobile: link to /menu */}
           <Link
             href="/menu"
-            className="rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 md:pointer-events-none"
+            className="md:hidden rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
             style={{ width: 34, height: 34, backgroundColor: "#006859" }}
           >
             D
           </Link>
+
+          {/* Desktop: dropdown */}
+          <div className="hidden md:block">
+            <UserMenu />
+          </div>
         </div>
       </header>
 
