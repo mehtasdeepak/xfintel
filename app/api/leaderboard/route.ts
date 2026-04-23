@@ -136,6 +136,7 @@ export async function GET(req: NextRequest) {
       total_influencers: ranked.length,
       total_signals_week: weekSignals ?? 0,
       most_active: mostActive,
+      most_active_signals: ranked[0]?.total_signals ?? null,
     },
   });
 }

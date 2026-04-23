@@ -10,15 +10,17 @@ import {
   Settings,
   HelpCircle,
   Share2,
+  LogOut,
 } from "lucide-react";
+import { signOut } from "@/components/UserMenu";
 
 const MENU_ITEMS = [
-  { icon: Bell,       label: "Notifications",       href: "#" },
-  { icon: Lock,       label: "Upgrade to Pro",       href: "#" },
-  { icon: Plus,       label: "Submit an Influencer", href: "#" },
-  { icon: Settings,   label: "Settings",             href: "#" },
-  { icon: HelpCircle, label: "Support",              href: "#" },
-  { icon: Share2,     label: "Share XFintel",        href: "#" },
+  { icon: Bell,       label: "Notifications",       href: "#",                    external: false },
+  { icon: Lock,       label: "Upgrade to Pro",       href: "#",                    external: false },
+  { icon: Plus,       label: "Submit an Influencer", href: "#",                    external: false },
+  { icon: Settings,   label: "Settings",             href: "#",                    external: false },
+  { icon: HelpCircle, label: "Support",              href: "https://x.com/XFintelHQ", external: true },
+  { icon: Share2,     label: "Share XFintel",        href: "#",                    external: false },
 ];
 
 export default function MenuPage() {
@@ -88,13 +90,15 @@ export default function MenuPage() {
           boxShadow: "0px 2px 12px rgba(23, 29, 27, 0.06)",
         }}
       >
-        {MENU_ITEMS.map(({ icon: Icon, label, href }, idx) => (
-          <Link
+        {MENU_ITEMS.map(({ icon: Icon, label, href, external }, idx) => (
+          <a
             key={label}
             href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
             className="flex items-center gap-4 px-4 py-4 transition-colors active:bg-[#f5fbf7]"
             style={{
-              borderBottom: idx < MENU_ITEMS.length - 1 ? "1px solid #f5fbf7" : "none",
+              borderBottom: "1px solid #f5fbf7",
               textDecoration: "none",
             }}
           >
@@ -113,8 +117,25 @@ export default function MenuPage() {
 
             {/* Chevron */}
             <ChevronRight size={16} style={{ color: "#9eb3ae" }} />
-          </Link>
+          </a>
         ))}
+
+        {/* Sign out */}
+        <button
+          onClick={signOut}
+          className="flex items-center gap-4 px-4 py-4 w-full transition-colors active:bg-[#fff5f5]"
+          style={{ border: "none", background: "none", cursor: "pointer", textAlign: "left" }}
+        >
+          <div
+            className="flex items-center justify-center rounded-xl flex-shrink-0"
+            style={{ width: 36, height: 36, backgroundColor: "#fee2e2" }}
+          >
+            <LogOut size={17} style={{ color: "#ba1a1a" }} />
+          </div>
+          <p className="flex-1 text-sm font-medium" style={{ color: "#ba1a1a" }}>
+            Sign out
+          </p>
+        </button>
       </div>
 
       {/* Version note */}

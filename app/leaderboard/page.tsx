@@ -25,6 +25,7 @@ type Summary = {
   total_influencers: number;
   total_signals_week: number;
   most_active: string | null;
+  most_active_signals?: number | null;
 };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -43,7 +44,7 @@ const RANK_ACCENT: Record<number, string> = {
 };
 
 const ROW_BG: Record<number, string> = {
-  1: "#fffbeb",
+  1: "color-mix(in oklch, #fbbf24 12%, transparent)",
   2: "#f8fafc",
   3: "#fafaf9",
 };
@@ -75,10 +76,17 @@ function WinRatePill({ value }: { value: number | null }) {
       </span>
     );
   }
-  if (value > 50) {
+  if (value >= 70) {
     return (
       <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#dcfce7", color: "#006859" }}>
         {value === 100 ? "⭐ " : ""}{value}%
+      </span>
+    );
+  }
+  if (value >= 50) {
+    return (
+      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#fef3c7", color: "#92580a" }}>
+        {value}%
       </span>
     );
   }
@@ -101,19 +109,35 @@ function TransparencyBadge({ value }: { value: boolean }) {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string | number }) {
+function StatCard({ label, value, subtitle }: { label: string; value: string | number; subtitle?: string }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <div
-      className="w-full md:flex-1 rounded-2xl p-6 flex flex-col gap-1"
-      style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)", borderRadius: "1rem" }}
+      className="w-full md:flex-1 flex flex-col gap-1"
+      style={{
+        backgroundColor: "#ffffff",
+        border: "1px solid #e5e7eb",
+        padding: "16px 18px",
+        boxShadow: hovered ? "0px 20px 40px rgba(23, 29, 27, 0.12)" : "0px 12px 32px rgba(23, 29, 27, 0.06)",
+        borderRadius: "14px",
+        transform: hovered ? "translateY(-2px)" : "none",
+        transition: "transform 0.15s ease, box-shadow 0.15s ease",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <p className="type-label" style={{ color: "#3d4946" }}>{label}</p>
+      <p style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</p>
       <p
         className="text-[2rem] md:text-[2rem]"
-        style={{ fontWeight: 700, letterSpacing: "-0.02em", color: "#006859", lineHeight: 1.1, wordBreak: "break-word" }}
+        style={{ fontWeight: 600, fontSize: "2rem", letterSpacing: "-0.02em", color: "#0f6e56", lineHeight: 1.1, wordBreak: "break-word", fontFeatureSettings: '"tnum"' }}
       >
         {value}
       </p>
+      {subtitle && (
+        <p style={{ fontSize: "12px", color: "#3d4946", marginTop: 2 }}>
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }
@@ -156,7 +180,7 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
         backgroundColor: rowBg ?? "transparent",
       }}
       onMouseEnter={(e) => {
-        if (!rowBg) (e.currentTarget as HTMLElement).style.backgroundColor = "#fafcfb";
+        if (!rowBg) (e.currentTarget as HTMLElement).style.backgroundColor = "oklch(0.965 0.006 95)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = rowBg ?? "transparent";
@@ -419,7 +443,7 @@ export default function LeaderboardPage() {
   const activeLabel = TIMEFRAMES.find((t) => t.days === activeDays)?.label ?? "Last 7 Days";
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#f5fbf7" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "oklch(0.965 0.006 95)" }}>
       <Sidebar />
       <TopNav />
 
@@ -486,7 +510,7 @@ export default function LeaderboardPage() {
             <div className="flex flex-col md:flex-row gap-4">
               <StatCard label="Influencers Tracked" value={summary.total_influencers} />
               <StatCard label="Signals This Week"   value={summary.total_signals_week.toLocaleString()} />
-              <StatCard label="Most Active"         value={summary.most_active ?? "—"} />
+              <StatCard label="Most Active"         value={summary.most_active ?? "—"} subtitle={summary.most_active_signals ? `${summary.most_active_signals} signals · last 7 days` : undefined} />
             </div>
           )}
 
@@ -518,20 +542,20 @@ export default function LeaderboardPage() {
             {/* Table header */}
             <div
               className="flex items-center gap-4 px-5 py-3"
-              style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}
+              style={{ backgroundColor: "#f0f0ee", borderBottom: "1px solid #e0ebe6" }}
             >
-              <p className="type-label w-12 flex-shrink-0" style={{ color: "#3d4946" }}>Rank</p>
-              <p className="type-label flex-1"             style={{ color: "#3d4946" }}>Influencer</p>
-              <p className="type-label w-[110px] hidden md:block text-right" style={{ color: "#3d4946" }}>Total Signals</p>
-              <p className="type-label w-[100px] hidden md:block text-right" style={{ color: "#3d4946" }}>Trade Calls</p>
-              <p className="type-label w-[100px] hidden md:block text-right" style={{ color: "#3d4946" }}>Win Rate</p>
-              <p className="type-label w-[110px] hidden md:block text-center" style={{ color: "#3d4946" }}>Transparency</p>
-              <p className="type-label w-[110px] text-right"                 style={{ color: "#3d4946" }}>Action</p>
+              <p className="w-12 flex-shrink-0" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Rank</p>
+              <p className="flex-1"             style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Influencer</p>
+              <p className="w-[110px] hidden md:block text-right" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Total</p>
+              <p className="w-[100px] hidden md:block text-right" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Trades</p>
+              <p className="w-[100px] hidden md:block text-right" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Win Rate</p>
+              <p className="w-[110px] hidden md:block text-center" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Transparency</p>
+              <p className="w-[110px] text-right"                 style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Action</p>
             </div>
 
             {/* Active timeframe label */}
-            <div className="px-5 py-2.5" style={{ backgroundColor: "#fafcfb", borderBottom: "1px solid #f0f4f2" }}>
-              <p className="type-label" style={{ color: "#006859" }}>Showing · {activeLabel}</p>
+            <div className="px-5 py-2.5" style={{ backgroundColor: "#f5f5f4", borderBottom: "1px solid #f0f4f2" }}>
+              <p style={{ color: "#006859", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em" }}>{`SHOWING · ${activeLabel.toUpperCase()}`}</p>
             </div>
 
             {/* Body */}

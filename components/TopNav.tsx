@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Search, Bell } from "lucide-react";
+import UserMenu from "@/components/UserMenu";
 
 export default function TopNav() {
   return (
@@ -40,14 +41,20 @@ export default function TopNav() {
         >
           <Bell size={20} />
         </button>
-        {/* Avatar — tappable on mobile (→ /menu), inert on desktop */}
+
+        {/* Mobile: link to /menu */}
         <Link
           href="/menu"
-          className="rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0 md:pointer-events-none"
+          className="md:hidden rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
           style={{ width: 34, height: 34, backgroundColor: "#006859" }}
         >
           D
         </Link>
+
+        {/* Desktop: dropdown */}
+        <div className="hidden md:block">
+          <UserMenu />
+        </div>
       </div>
     </header>
   );

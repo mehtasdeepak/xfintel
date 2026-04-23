@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
   display: "swap",
 });
 
@@ -20,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${geist.variable} h-full antialiased`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#006859" />
@@ -33,7 +39,7 @@ export default function RootLayout({
       </head>
       <body
         className="min-h-full flex flex-col pb-16 md:pb-0"
-        style={{ fontFamily: "var(--font-inter), sans-serif" }}
+        style={{ fontFamily: "var(--font-geist), ui-sans-serif, system-ui, sans-serif" }}
       >
         {children}
         <BottomNav />
