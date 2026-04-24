@@ -228,7 +228,7 @@ export default function RegisterPage() {
     setLoading('x');
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'twitter',
+      provider: 'x',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       scopes: 'tweet.read users.read offline.access'
