@@ -13,6 +13,7 @@ const TABS = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  if (pathname === '/landing') return null;
 
   return (
     <nav
