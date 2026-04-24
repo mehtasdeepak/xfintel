@@ -87,36 +87,36 @@ export default function SignalFeedPage() {
     : null;
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#f5fbf7" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg-2)" }}>
       <Sidebar />
 
       <header
         className="fixed top-0 right-0 md:left-[220px] left-0 z-30 flex items-center justify-between gap-4 px-6"
         style={{
           height: 56,
-          backgroundColor: "#ffffff",
-          boxShadow: "0px 2px 8px rgba(23, 29, 27, 0.06)",
+          backgroundColor: "var(--card)",
+          borderBottom: "1px solid var(--line)",
         }}
       >
         <div
           className="flex items-center gap-2 px-4 rounded-full"
-          style={{ width: 320, height: 36, backgroundColor: "#eff5f2" }}
+          style={{ width: 320, height: 36, backgroundColor: "var(--teal-soft)" }}
         >
-          <Search size={15} style={{ color: "#3d4946", flexShrink: 0 }} />
+          <Search size={15} style={{ color: "var(--ink-2)", flexShrink: 0 }} />
           <input
             type="text"
             placeholder="Search signals, tickers..."
             className="flex-1 bg-transparent text-sm outline-none min-w-0"
-            style={{ color: "#171d1b" }}
+            style={{ color: "var(--ink)" }}
           />
         </div>
 
         <div className="flex items-center gap-3">
           <button
             className="p-2 rounded-full transition-colors"
-            style={{ color: "#3d4946" }}
+            style={{ color: "var(--ink-2)" }}
             onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2")
+              ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)")
             }
             onMouseLeave={(e) =>
               ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")
@@ -129,7 +129,7 @@ export default function SignalFeedPage() {
           <Link
             href="/menu"
             className="md:hidden rounded-full flex items-center justify-center text-sm font-semibold text-white flex-shrink-0"
-            style={{ width: 34, height: 34, backgroundColor: "#006859" }}
+            style={{ width: 34, height: 34, backgroundColor: "var(--teal)" }}
           >
             D
           </Link>
@@ -146,10 +146,10 @@ export default function SignalFeedPage() {
 
           <div className="flex-1 min-w-0 max-w-[640px] flex flex-col gap-3 md:gap-6">
             <div className="flex flex-col gap-1 pt-4 md:pt-0">
-              <h1 className="type-display text-[1.5rem] md:text-[2.5rem]" style={{ color: "#171d1b" }}>
+              <h1 className="type-display text-[1.5rem] md:text-[2.5rem]" style={{ color: "var(--ink)" }}>
                 Signal Feed
               </h1>
-              <p className="type-body text-[0.875rem] md:text-[1rem]" style={{ color: "#3d4946" }}>
+              <p className="type-body text-[0.875rem] md:text-[1rem]" style={{ color: "var(--ink-2)" }}>
                 Real-time accountability for financial influencers
               </p>
               {formattedTime && (
@@ -157,14 +157,14 @@ export default function SignalFeedPage() {
                   <span className="relative flex" style={{ width: 8, height: 8 }}>
                     <span
                       className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
-                      style={{ backgroundColor: "#006859" }}
+                      style={{ backgroundColor: "var(--teal)" }}
                     />
                     <span
                       className="relative inline-flex rounded-full"
-                      style={{ width: 8, height: 8, backgroundColor: "#006859" }}
+                      style={{ width: 8, height: 8, backgroundColor: "var(--teal)" }}
                     />
                   </span>
-                  <p className="type-label" style={{ color: "#3d4946" }}>
+                  <p className="type-label" style={{ color: "var(--ink-2)" }}>
                     Last updated {formattedTime}
                   </p>
                 </div>
@@ -189,19 +189,19 @@ export default function SignalFeedPage() {
                     onClick={() => handleFilterChange(value)}
                     className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
                     style={{
-                      backgroundColor: isActive ? "#006859" : "#ffffff",
-                      color: isActive ? "#ffffff" : "#3d4946",
-                      border: isActive ? "1px solid #006859" : "1px solid #e0ebe6",
+                      backgroundColor: isActive ? "var(--teal)" : "var(--card)",
+                      color: isActive ? "#ffffff" : "var(--ink-2)",
+                      border: isActive ? "1px solid var(--teal)" : "1px solid var(--line)",
                       whiteSpace: "nowrap",
                       flexShrink: 0,
                     }}
                     onMouseEnter={(e) => {
                       if (!isActive)
-                        (e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2";
+                        (e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)";
                     }}
                     onMouseLeave={(e) => {
                       if (!isActive)
-                        (e.currentTarget as HTMLElement).style.backgroundColor = "#ffffff";
+                        (e.currentTarget as HTMLElement).style.backgroundColor = "var(--card)";
                     }}
                   >
                     {label}
@@ -216,23 +216,23 @@ export default function SignalFeedPage() {
                   <div
                     key={i}
                     className="h-48 rounded-2xl animate-pulse"
-                    style={{ backgroundColor: "#e0ebe6" }}
+                    style={{ backgroundColor: "var(--line)" }}
                   />
                 ))}
               </div>
             ) : error ? (
               <div
                 className="rounded-2xl p-6 text-sm"
-                style={{ backgroundColor: "#ffffff", color: "#ba1a1a" }}
+                style={{ backgroundColor: "var(--card)", color: "var(--down)" }}
               >
                 {error}
               </div>
             ) : posts.length === 0 ? (
               <div
                 className="rounded-2xl p-10 text-center"
-                style={{ backgroundColor: "#ffffff" }}
+                style={{ backgroundColor: "var(--card)" }}
               >
-                <p className="text-sm" style={{ color: "#3d4946" }}>
+                <p className="text-sm" style={{ color: "var(--ink-2)" }}>
                   No posts found for this filter.
                 </p>
               </div>
@@ -247,8 +247,8 @@ export default function SignalFeedPage() {
                     disabled={loadingMore}
                     className="w-full py-3 rounded-2xl text-sm font-medium transition-colors"
                     style={{
-                      backgroundColor: "#ffffff",
-                      color: loadingMore ? "#3d4946" : "#006859",
+                      backgroundColor: "var(--card)",
+                      color: loadingMore ? "var(--ink-2)" : "var(--teal)",
                       boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
                     }}
                   >

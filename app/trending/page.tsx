@@ -31,7 +31,7 @@ function PriceDisplay({
 }) {
   if (price === null) return null;
   const positive = pct !== null && pct >= 0;
-  const pctColor = pct === null ? "#3d4946" : positive ? "#006859" : "#ba1a1a";
+  const pctColor = pct === null ? "var(--ink-2)" : positive ? "var(--teal)" : "var(--down)";
   const arrow = pct === null ? "" : positive ? "▲ " : "▼ ";
   const pctStr = pct !== null ? `${arrow}${positive ? "+" : ""}${pct.toFixed(2)}%` : null;
 
@@ -42,7 +42,7 @@ function PriceDisplay({
         style={{
           fontWeight: 700,
           fontSize: size === "lg" ? undefined : "0.875rem",
-          color: "#171d1b",
+          color: "var(--ink)",
           lineHeight: 1.1,
         }}
       >
@@ -60,9 +60,9 @@ function PriceDisplay({
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const SENTIMENT_COLOR: Record<string, string> = {
-  bullish: "#006859",
-  bearish: "#ba1a1a",
-  neutral: "#3d4946",
+  bullish: "var(--teal)",
+  bearish: "var(--down)",
+  neutral: "var(--ink-2)",
 };
 
 const SENTIMENT_ARROW: Record<string, string> = {
@@ -74,7 +74,7 @@ const SENTIMENT_ARROW: Record<string, string> = {
 const SENTIMENT_BG: Record<string, string> = {
   bullish: "#dcfce7",
   bearish: "#fee2e2",
-  neutral: "#e0ebe6",
+  neutral: "var(--line)",
 };
 
 // ─── Sparkline (decorative SVG placeholder) ───────────────────────────────────
@@ -128,8 +128,8 @@ function SparklineMini({ color = "#006859" }: { color?: string }) {
 // ─── Sentiment pill ───────────────────────────────────────────────────────────
 
 function SentimentPill({ sentiment }: { sentiment: string }) {
-  const color = SENTIMENT_COLOR[sentiment] ?? "#3d4946";
-  const bg = SENTIMENT_BG[sentiment] ?? "#e0ebe6";
+  const color = SENTIMENT_COLOR[sentiment] ?? "var(--ink-2)";
+  const bg = SENTIMENT_BG[sentiment] ?? "var(--line)";
 
   return (
     <span
@@ -148,16 +148,16 @@ function FeaturedCard({ ticker }: { ticker: Ticker }) {
     <div
       className="flex flex-col justify-between h-full rounded-2xl p-6 gap-4"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
-        borderLeft: "4px solid #006859",
+        borderLeft: "4px solid var(--teal)",
         minHeight: 280,
       }}
     >
       {/* Top row */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
-          <p className="type-label" style={{ color: "#3d4946" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>
             #1 Most Mentioned · 7 days
           </p>
           <p
@@ -166,7 +166,7 @@ function FeaturedCard({ ticker }: { ticker: Ticker }) {
               fontWeight: 800,
               letterSpacing: "-0.03em",
               lineHeight: 1,
-              color: "#171d1b",
+              color: "var(--ink)",
             }}
           >
             ${ticker.ticker}
@@ -185,34 +185,34 @@ function FeaturedCard({ ticker }: { ticker: Ticker }) {
       <div className="flex flex-wrap gap-2">
         <div
           className="flex flex-col items-center px-4 py-2.5 rounded-xl flex-1"
-          style={{ backgroundColor: "#f5fbf7" }}
+          style={{ backgroundColor: "var(--bg-2)" }}
         >
-          <p className="text-lg font-bold" style={{ color: "#006859" }}>
+          <p className="text-lg font-bold" style={{ color: "var(--teal)" }}>
             {ticker.mentions}
           </p>
-          <p className="type-label" style={{ color: "#3d4946" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>
             Total Mentions
           </p>
         </div>
         <div
           className="flex flex-col items-center px-4 py-2.5 rounded-xl flex-1"
-          style={{ backgroundColor: "#f5fbf7" }}
+          style={{ backgroundColor: "var(--bg-2)" }}
         >
-          <p className="text-lg font-bold" style={{ color: "#006859" }}>
+          <p className="text-lg font-bold" style={{ color: "var(--teal)" }}>
             {ticker.avg_confidence != null ? `${ticker.avg_confidence}%` : "—"}
           </p>
-          <p className="type-label" style={{ color: "#3d4946" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>
             Avg Confidence
           </p>
         </div>
         <div
           className="flex flex-col items-center px-4 py-2.5 rounded-xl flex-1"
-          style={{ backgroundColor: "#f5fbf7" }}
+          style={{ backgroundColor: "var(--bg-2)" }}
         >
-          <p className="text-lg font-bold" style={{ color: "#006859" }}>
+          <p className="text-lg font-bold" style={{ color: "var(--teal)" }}>
             {ticker.influencer_count}
           </p>
-          <p className="type-label" style={{ color: "#3d4946" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>
             Influencers
           </p>
         </div>
@@ -231,7 +231,7 @@ function MobileFeaturedCard({ ticker }: { ticker: Ticker }) {
   return (
     <div
       className="rounded-2xl p-5 flex flex-col gap-3 overflow-hidden"
-      style={{ backgroundColor: "#006859" }}
+      style={{ backgroundColor: "var(--teal)" }}
     >
       {/* Top row: label + sentiment+confidence pill */}
       <div className="flex items-start justify-between gap-2">
@@ -290,17 +290,18 @@ function MobileFeaturedCard({ ticker }: { ticker: Ticker }) {
 function MobileTickerRow({ ticker, rank }: { ticker: Ticker; rank: number }) {
   const pct = ticker.price_change_percent;
   const positive = pct !== null && pct >= 0;
-  const pctColor = pct === null ? "#3d4946" : positive ? "#006859" : "#ba1a1a";
+  const pctColor = pct === null ? "var(--ink-2)" : positive ? "var(--teal)" : "var(--down)";
   const pctStr = pct !== null ? `${positive ? "+" : ""}${pct.toFixed(2)}%` : null;
-  const sentimentColor = SENTIMENT_COLOR[ticker.dominant_sentiment] ?? "#3d4946";
-  const sentimentBg = SENTIMENT_BG[ticker.dominant_sentiment] ?? "#e0ebe6";
+  const sentimentColor = SENTIMENT_COLOR[ticker.dominant_sentiment] ?? "var(--ink-2)";
+  const sentimentBg = SENTIMENT_BG[ticker.dominant_sentiment] ?? "var(--line)";
+  // SVG stroke — keep as hex (CSS variables don't work in SVG attributes)
   const sparkColor = ticker.dominant_sentiment === "bearish" ? "#ba1a1a" : "#006859";
 
   return (
     <div
       className="flex items-center gap-3 px-4 py-3 rounded-xl"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 2px 8px rgba(23, 29, 27, 0.06)",
       }}
     >
@@ -309,11 +310,11 @@ function MobileTickerRow({ ticker, rank }: { ticker: Ticker; rank: number }) {
         <div className="flex items-center gap-2">
           <p
             className="text-xs font-bold flex-shrink-0"
-            style={{ color: "#9eb3ae", minWidth: 20 }}
+            style={{ color: "var(--muted)", minWidth: 20 }}
           >
             {String(rank).padStart(2, "0")}
           </p>
-          <p className="text-sm font-bold flex-shrink-0" style={{ color: "#171d1b" }}>
+          <p className="text-sm font-bold flex-shrink-0" style={{ color: "var(--ink)" }}>
             ${ticker.ticker}
           </p>
           <span
@@ -329,7 +330,7 @@ function MobileTickerRow({ ticker, rank }: { ticker: Ticker; rank: number }) {
             {ticker.dominant_sentiment}
           </span>
         </div>
-        <p className="text-xs" style={{ color: "#9eb3ae", paddingLeft: 20 }}>
+        <p className="text-xs" style={{ color: "var(--muted)", paddingLeft: 20 }}>
           {ticker.mentions} mention{ticker.mentions !== 1 ? "s" : ""}
         </p>
       </div>
@@ -348,7 +349,7 @@ function MobileTickerRow({ ticker, rank }: { ticker: Ticker; rank: number }) {
           {positive ? "▲" : "▼"} {pctStr}
         </p>
       ) : (
-        <p className="text-xs flex-shrink-0" style={{ color: "#9eb3ae", minWidth: 56, textAlign: "right" }}>
+        <p className="text-xs flex-shrink-0" style={{ color: "var(--muted)", minWidth: 56, textAlign: "right" }}>
           —
         </p>
       )}
@@ -363,34 +364,34 @@ function SideList({ tickers }: { tickers: Ticker[] }) {
     <div
       className="flex flex-col rounded-2xl overflow-hidden h-full"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
       }}
     >
-      <div className="px-5 py-3" style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}>
-        <p className="type-label" style={{ color: "#3d4946" }}>Trending Now</p>
+      <div className="px-5 py-3" style={{ backgroundColor: "var(--bg-2)", borderBottom: "1px solid var(--line)" }}>
+        <p className="type-label" style={{ color: "var(--ink-2)" }}>Trending Now</p>
       </div>
       {tickers.map((t, idx) => {
         const arrow = SENTIMENT_ARROW[t.dominant_sentiment] ?? "—";
-        const color = SENTIMENT_COLOR[t.dominant_sentiment] ?? "#3d4946";
+        const color = SENTIMENT_COLOR[t.dominant_sentiment] ?? "var(--ink-2)";
         return (
           <div
             key={t.ticker}
             className="flex items-center gap-3 px-5 py-4 transition-colors"
-            style={{ borderBottom: idx < tickers.length - 1 ? "1px solid #f5fbf7" : "none" }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#fafcfb")}
+            style={{ borderBottom: idx < tickers.length - 1 ? "1px solid var(--bg-2)" : "none" }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-2)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
           >
-            <p className="text-xs font-bold w-5 flex-shrink-0" style={{ color: "#3d4946" }}>
+            <p className="text-xs font-bold w-5 flex-shrink-0" style={{ color: "var(--ink-2)" }}>
               {String(idx + 2).padStart(2, "0")}
             </p>
             <span
               className="text-sm font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-              style={{ backgroundColor: "#eff5f2", color: "#006859" }}
+              style={{ backgroundColor: "var(--teal-soft)", color: "var(--teal)" }}
             >
               ${t.ticker}
             </span>
-            <p className="flex-1 text-xs" style={{ color: "#3d4946" }}>
+            <p className="flex-1 text-xs" style={{ color: "var(--ink-2)" }}>
               {t.mentions} mention{t.mentions !== 1 ? "s" : ""}
             </p>
             <span className="text-sm font-bold flex-shrink-0 mr-2" style={{ color }}>
@@ -408,7 +409,7 @@ function SideList({ tickers }: { tickers: Ticker[] }) {
 
 function SentimentBar({ ticker }: { ticker: Ticker }) {
   const total = ticker.bullish_count + ticker.bearish_count + ticker.neutral_count;
-  if (total === 0) return <div className="h-2 rounded-full w-full" style={{ backgroundColor: "#e0ebe6" }} />;
+  if (total === 0) return <div className="h-2 rounded-full w-full" style={{ backgroundColor: "var(--line)" }} />;
 
   const bullishPct = (ticker.bullish_count / total) * 100;
   const bearishPct = (ticker.bearish_count / total) * 100;
@@ -418,13 +419,13 @@ function SentimentBar({ ticker }: { ticker: Ticker }) {
     <div className="flex items-center gap-2 w-full">
       <div className="flex h-2 rounded-full overflow-hidden flex-1">
         {bullishPct > 0 && (
-          <div style={{ width: `${bullishPct}%`, backgroundColor: "#006859" }} />
+          <div style={{ width: `${bullishPct}%`, backgroundColor: "var(--teal)" }} />
         )}
         {neutralPct > 0 && (
-          <div style={{ width: `${neutralPct}%`, backgroundColor: "#e0ebe6" }} />
+          <div style={{ width: `${neutralPct}%`, backgroundColor: "var(--line)" }} />
         )}
         {bearishPct > 0 && (
-          <div style={{ width: `${bearishPct}%`, backgroundColor: "#ba1a1a" }} />
+          <div style={{ width: `${bearishPct}%`, backgroundColor: "var(--down)" }} />
         )}
       </div>
       <p className="text-xs flex-shrink-0 w-8 text-right" style={{ color: SENTIMENT_COLOR[ticker.dominant_sentiment] }}>
@@ -441,21 +442,21 @@ function FullTable({ tickers }: { tickers: Ticker[] }) {
     <div
       className="rounded-2xl overflow-hidden"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
       }}
     >
       {/* Header */}
       <div
         className="flex items-center gap-4 px-5 py-3"
-        style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}
+        style={{ backgroundColor: "var(--bg-2)", borderBottom: "1px solid var(--line)" }}
       >
-        <p className="type-label w-10 flex-shrink-0"                    style={{ color: "#3d4946" }}>Rank</p>
-        <p className="type-label w-24"                                  style={{ color: "#3d4946" }}>Ticker</p>
-        <p className="type-label w-[120px] text-right hidden md:block"  style={{ color: "#3d4946" }}>Price</p>
-        <p className="type-label w-[100px] text-right hidden md:block"  style={{ color: "#3d4946" }}>24h Mentions</p>
-        <p className="type-label flex-1 hidden md:block"                style={{ color: "#3d4946" }}>Influencer Sentiment</p>
-        <p className="type-label w-16 text-center"                      style={{ color: "#3d4946" }}>Action</p>
+        <p className="type-label w-10 flex-shrink-0"                    style={{ color: "var(--ink-2)" }}>Rank</p>
+        <p className="type-label w-24"                                  style={{ color: "var(--ink-2)" }}>Ticker</p>
+        <p className="type-label w-[120px] text-right hidden md:block"  style={{ color: "var(--ink-2)" }}>Price</p>
+        <p className="type-label w-[100px] text-right hidden md:block"  style={{ color: "var(--ink-2)" }}>24h Mentions</p>
+        <p className="type-label flex-1 hidden md:block"                style={{ color: "var(--ink-2)" }}>Influencer Sentiment</p>
+        <p className="type-label w-16 text-center"                      style={{ color: "var(--ink-2)" }}>Action</p>
       </div>
 
       {/* Rows */}
@@ -463,14 +464,14 @@ function FullTable({ tickers }: { tickers: Ticker[] }) {
         <div
           key={t.ticker}
           className="flex items-center gap-4 px-5 py-4 transition-colors"
-          style={{ borderBottom: "1px solid #f5fbf7" }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#fafcfb")}
+          style={{ borderBottom: "1px solid var(--bg-2)" }}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-2)")}
           onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
         >
           {/* Rank */}
           <p
             className="w-10 flex-shrink-0 text-sm font-bold"
-            style={{ color: idx < 3 ? ["#f59e0b", "#9ca3af", "#b45309"][idx] : "#006859" }}
+            style={{ color: idx < 3 ? ["#f59e0b", "#9ca3af", "#b45309"][idx] : "var(--teal)" }}
           >
             {String(idx + 1).padStart(2, "0")}
           </p>
@@ -478,7 +479,7 @@ function FullTable({ tickers }: { tickers: Ticker[] }) {
           {/* Ticker */}
           <span
             className="w-24 text-sm font-bold px-2.5 py-1 rounded-full inline-block text-center"
-            style={{ backgroundColor: "#eff5f2", color: "#006859" }}
+            style={{ backgroundColor: "var(--teal-soft)", color: "var(--teal)" }}
           >
             ${t.ticker}
           </span>
@@ -489,7 +490,7 @@ function FullTable({ tickers }: { tickers: Ticker[] }) {
           </div>
 
           {/* Mentions */}
-          <p className="w-[100px] text-right text-sm font-medium hidden md:block" style={{ color: "#171d1b" }}>
+          <p className="w-[100px] text-right text-sm font-medium hidden md:block" style={{ color: "var(--ink)" }}>
             {t.mentions}
           </p>
 
@@ -502,10 +503,10 @@ function FullTable({ tickers }: { tickers: Ticker[] }) {
           <div className="w-16 flex justify-center">
             <button
               className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-              style={{ backgroundColor: "#eff5f2", color: "#006859" }}
+              style={{ backgroundColor: "var(--teal-soft)", color: "var(--teal)" }}
               title={`Add $${t.ticker} to watchlist`}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#006859") || ((e.currentTarget as HTMLElement).style.color = "#ffffff")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2") || ((e.currentTarget as HTMLElement).style.color = "#006859")}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal)") || ((e.currentTarget as HTMLElement).style.color = "#ffffff")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)") || ((e.currentTarget as HTMLElement).style.color = "var(--teal)")}
             >
               <Plus size={14} />
             </button>
@@ -519,9 +520,9 @@ function FullTable({ tickers }: { tickers: Ticker[] }) {
 // ─── Heatmap ──────────────────────────────────────────────────────────────────
 
 const HEATMAP_COLOR: Record<string, string> = {
-  bullish: "#006859",
-  bearish: "#ba1a1a",
-  neutral: "#9eb3ae",
+  bullish: "var(--teal)",
+  bearish: "var(--down)",
+  neutral: "var(--muted)",
 };
 
 function HeatmapLegend() {
@@ -529,32 +530,32 @@ function HeatmapLegend() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex flex-col gap-1.5">
-          <p className="type-label" style={{ color: "#3d4946" }}>Sentiment Range</p>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>Sentiment Range</p>
           <div className="flex items-center gap-3">
             <div
               className="h-2 rounded-full"
               style={{
                 width: 180,
-                background: "linear-gradient(to right, #ba1a1a, #9eb3ae, #006859)",
+                background: "linear-gradient(to right, var(--down), var(--muted), var(--teal))",
               }}
             />
             <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1 text-xs" style={{ color: "#ba1a1a" }}>
-                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#ba1a1a" }} />
+              <span className="flex items-center gap-1 text-xs" style={{ color: "var(--down)" }}>
+                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "var(--down)" }} />
                 Bearish
               </span>
-              <span className="flex items-center gap-1 text-xs" style={{ color: "#9eb3ae" }}>
-                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#9eb3ae" }} />
+              <span className="flex items-center gap-1 text-xs" style={{ color: "var(--muted)" }}>
+                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "var(--muted)" }} />
                 Neutral
               </span>
-              <span className="flex items-center gap-1 text-xs" style={{ color: "#006859" }}>
-                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#006859" }} />
+              <span className="flex items-center gap-1 text-xs" style={{ color: "var(--teal)" }}>
+                <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "var(--teal)" }} />
                 Bullish
               </span>
             </div>
           </div>
         </div>
-        <p className="type-label" style={{ color: "#3d4946" }}>Square Size = Volume of Mentions (7 Days)</p>
+        <p className="type-label" style={{ color: "var(--ink-2)" }}>Square Size = Volume of Mentions (7 Days)</p>
       </div>
     </div>
   );
@@ -567,7 +568,7 @@ function HeatmapSquare({
   ticker: Ticker;
   rank: number;
 }) {
-  const bg = HEATMAP_COLOR[ticker.dominant_sentiment] ?? "#9eb3ae";
+  const bg = HEATMAP_COLOR[ticker.dominant_sentiment] ?? "var(--muted)";
   const isLarge = rank === 1;
   const isMedium = rank === 2 || rank === 3;
 
@@ -690,12 +691,12 @@ function HeatmapGrid({ tickers }: { tickers: Ticker[] }) {
 
 function FeaturedSkeleton() {
   return (
-    <div className="rounded-2xl p-6 flex flex-col gap-4 animate-pulse" style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23,29,27,0.06)", minHeight: 280 }}>
-      <div className="h-4 w-32 rounded" style={{ backgroundColor: "#e0ebe6" }} />
-      <div className="h-12 w-40 rounded" style={{ backgroundColor: "#e0ebe6" }} />
-      <div className="h-14 w-full rounded" style={{ backgroundColor: "#e0ebe6" }} />
+    <div className="rounded-2xl p-6 flex flex-col gap-4 animate-pulse" style={{ backgroundColor: "var(--card)", boxShadow: "0px 12px 32px rgba(23,29,27,0.06)", minHeight: 280 }}>
+      <div className="h-4 w-32 rounded" style={{ backgroundColor: "var(--line)" }} />
+      <div className="h-12 w-40 rounded" style={{ backgroundColor: "var(--line)" }} />
+      <div className="h-14 w-full rounded" style={{ backgroundColor: "var(--line)" }} />
       <div className="flex gap-2">
-        {[1, 2, 3].map((i) => <div key={i} className="flex-1 h-14 rounded-xl" style={{ backgroundColor: "#e0ebe6" }} />)}
+        {[1, 2, 3].map((i) => <div key={i} className="flex-1 h-14 rounded-xl" style={{ backgroundColor: "var(--line)" }} />)}
       </div>
     </div>
   );
@@ -722,7 +723,7 @@ export default function TrendingPage() {
   const allTickers = tickers;
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#f5fbf7" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg-2)" }}>
       <Sidebar />
       <TopNav />
 
@@ -735,9 +736,9 @@ export default function TrendingPage() {
           {/* Page header */}
           <div className="flex items-start justify-between gap-4 pt-8 md:pt-0">
             <div className="flex flex-col gap-1">
-              <p className="type-label" style={{ color: "#006859" }}>Market Intelligence</p>
-              <h1 className="type-display" style={{ color: "#171d1b" }}>Trending Stocks</h1>
-              <p className="type-body mt-1 max-w-lg" style={{ color: "#3d4946" }}>
+              <p className="type-label" style={{ color: "var(--teal)" }}>Market Intelligence</p>
+              <h1 className="type-display" style={{ color: "var(--ink)" }}>Trending Stocks</h1>
+              <p className="type-body mt-1 max-w-lg" style={{ color: "var(--ink-2)" }}>
                 Real-time social sentiment analysis from your tracked financial influencers on X
               </p>
             </div>
@@ -745,14 +746,14 @@ export default function TrendingPage() {
             {/* View toggle — desktop only */}
             <div
               className="hidden md:flex items-center rounded-full p-1 flex-shrink-0 mt-2"
-              style={{ backgroundColor: "#ffffff", border: "1px solid #e0ebe6" }}
+              style={{ backgroundColor: "var(--card)", border: "1px solid var(--line)" }}
             >
               <button
                 onClick={() => setView("grid")}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
                 style={{
-                  backgroundColor: view === "grid" ? "#006859" : "transparent",
-                  color: view === "grid" ? "#ffffff" : "#3d4946",
+                  backgroundColor: view === "grid" ? "var(--teal)" : "transparent",
+                  color: view === "grid" ? "#ffffff" : "var(--ink-2)",
                 }}
               >
                 <LayoutGrid size={13} />
@@ -762,8 +763,8 @@ export default function TrendingPage() {
                 onClick={() => setView("heatmap")}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
                 style={{
-                  backgroundColor: view === "heatmap" ? "#006859" : "transparent",
-                  color: view === "heatmap" ? "#ffffff" : "#3d4946",
+                  backgroundColor: view === "heatmap" ? "var(--teal)" : "transparent",
+                  color: view === "heatmap" ? "#ffffff" : "var(--ink-2)",
                 }}
               >
                 <Map size={13} />
@@ -774,7 +775,7 @@ export default function TrendingPage() {
 
           {/* Error */}
           {error && (
-            <div className="rounded-2xl p-6 text-sm" style={{ backgroundColor: "#ffffff", color: "#ba1a1a" }}>
+            <div className="rounded-2xl p-6 text-sm" style={{ backgroundColor: "var(--card)", color: "var(--down)" }}>
               {error}
             </div>
           )}
@@ -784,9 +785,9 @@ export default function TrendingPage() {
             <div className="md:hidden flex flex-col gap-3">
               {loading ? (
                 <>
-                  <div className="rounded-2xl animate-pulse" style={{ backgroundColor: "#006859", opacity: 0.3, height: 200 }} />
+                  <div className="rounded-2xl animate-pulse" style={{ backgroundColor: "var(--teal)", opacity: 0.3, height: 200 }} />
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="rounded-xl animate-pulse h-16" style={{ backgroundColor: "#e0ebe6" }} />
+                    <div key={i} className="rounded-xl animate-pulse h-16" style={{ backgroundColor: "var(--line)" }} />
                   ))}
                 </>
               ) : featured ? (
@@ -801,8 +802,8 @@ export default function TrendingPage() {
                   )}
                 </>
               ) : (
-                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "#ffffff" }}>
-                  <p className="text-sm" style={{ color: "#3d4946" }}>No ticker data in the last 7 days. Run the sync route first.</p>
+                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "var(--card)" }}>
+                  <p className="text-sm" style={{ color: "var(--ink-2)" }}>No ticker data in the last 7 days. Run the sync route first.</p>
                 </div>
               )}
             </div>
@@ -812,15 +813,15 @@ export default function TrendingPage() {
           {!error && view === "heatmap" && (
             <div className="hidden md:block">
               {loading ? (
-                <div className="rounded-2xl animate-pulse" style={{ backgroundColor: "#e0ebe6", height: 480 }} />
+                <div className="rounded-2xl animate-pulse" style={{ backgroundColor: "var(--line)", height: 480 }} />
               ) : allTickers.length > 0 ? (
                 <div className="flex flex-col gap-4">
                   <HeatmapLegend />
                   <HeatmapGrid tickers={allTickers} />
                 </div>
               ) : (
-                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "#ffffff" }}>
-                  <p className="text-sm" style={{ color: "#3d4946" }}>No ticker data in the last 7 days. Run the sync route first.</p>
+                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "var(--card)" }}>
+                  <p className="text-sm" style={{ color: "var(--ink-2)" }}>No ticker data in the last 7 days. Run the sync route first.</p>
                 </div>
               )}
             </div>
@@ -840,7 +841,7 @@ export default function TrendingPage() {
                 </div>
                 <div style={{ flex: "2", minWidth: 0 }}>
                   {loading ? (
-                    <div className="rounded-2xl animate-pulse h-full" style={{ backgroundColor: "#e0ebe6", minHeight: 280 }} />
+                    <div className="rounded-2xl animate-pulse h-full" style={{ backgroundColor: "var(--line)", minHeight: 280 }} />
                   ) : sideList.length > 0 ? (
                     <SideList tickers={sideList} />
                   ) : null}
@@ -850,14 +851,14 @@ export default function TrendingPage() {
               {/* Full ranked table */}
               {!loading && allTickers.length > 0 && (
                 <div className="flex flex-col gap-3">
-                  <p className="type-label" style={{ color: "#3d4946" }}>All Tickers · Last 7 Days</p>
+                  <p className="type-label" style={{ color: "var(--ink-2)" }}>All Tickers · Last 7 Days</p>
                   <FullTable tickers={allTickers} />
                 </div>
               )}
 
               {!loading && allTickers.length === 0 && (
-                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "#ffffff" }}>
-                  <p className="text-sm" style={{ color: "#3d4946" }}>No ticker data in the last 7 days. Run the sync route first.</p>
+                <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "var(--card)" }}>
+                  <p className="text-sm" style={{ color: "var(--ink-2)" }}>No ticker data in the last 7 days. Run the sync route first.</p>
                 </div>
               )}
             </div>

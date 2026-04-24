@@ -52,13 +52,13 @@ type PortfolioData = {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const SENTIMENT_COLOR: Record<string, { bg: string; text: string; bar: string }> = {
-  bullish: { bg: "#e8f5e8", text: "#006859", bar: "#006859" },
-  bearish: { bg: "#fef2f2", text: "#ba1a1a", bar: "#ba1a1a" },
-  neutral: { bg: "#f5f5f5", text: "#3d4946", bar: "#9eb3ae" },
+  bullish: { bg: "#e8f5e8", text: "var(--teal)", bar: "var(--teal)" },
+  bearish: { bg: "#fef2f2", text: "var(--down)", bar: "var(--down)" },
+  neutral: { bg: "#f5f5f5", text: "var(--ink-2)", bar: "var(--muted)" },
 };
 
 const CATEGORY_COLOR: Record<string, { bg: string; text: string; label: string }> = {
-  trade_call:      { bg: "#006859", text: "#ffffff", label: "Trade Call" },
+  trade_call:      { bg: "var(--teal)", text: "#ffffff", label: "Trade Call" },
   portfolio:       { bg: "#0891b2", text: "#ffffff", label: "Portfolio" },
   watchlist:       { bg: "#d97706", text: "#ffffff", label: "Watchlist" },
   position_update: { bg: "#1a56db", text: "#ffffff", label: "Update" },
@@ -77,7 +77,7 @@ function Avatar({ src, name, size = 28 }: { src: string | null; name: string; si
   ) : (
     <div
       className="rounded-full flex items-center justify-center border-2 border-white flex-shrink-0 text-xs font-semibold text-white"
-      style={{ width: size, height: size, backgroundColor: "#006859", fontSize: size * 0.35 }}
+      style={{ width: size, height: size, backgroundColor: "var(--teal)", fontSize: size * 0.35 }}
     >
       {initials}
     </div>
@@ -88,12 +88,12 @@ function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div
       className="flex-1 min-w-0 rounded-2xl p-4 md:p-5 flex flex-col gap-1"
-      style={{ backgroundColor: "#ffffff", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
+      style={{ backgroundColor: "var(--card)", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
     >
-      <p className="text-2xl md:text-3xl font-bold" style={{ color: "#006859" }}>
+      <p className="text-2xl md:text-3xl font-bold" style={{ color: "var(--teal)" }}>
         {value}
       </p>
-      <p className="text-xs md:text-sm" style={{ color: "#3d4946" }}>
+      <p className="text-xs md:text-sm" style={{ color: "var(--ink-2)" }}>
         {label}
       </p>
     </div>
@@ -107,19 +107,19 @@ function TickerCard({ t }: { t: TickerData }) {
   return (
     <div
       className="rounded-2xl p-4 md:p-5 flex flex-col gap-3"
-      style={{ backgroundColor: "#ffffff", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
+      style={{ backgroundColor: "var(--card)", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
     >
       {/* Top row: ticker pill + price */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col gap-0.5">
           <span
             className="text-base font-bold px-3 py-1 rounded-full inline-block"
-            style={{ backgroundColor: "#171d1b", color: "#ffffff" }}
+            style={{ backgroundColor: "var(--ink)", color: "#ffffff" }}
           >
             ${t.ticker}
           </span>
           {t.company_name && (
-            <p className="text-xs pl-1 mt-1" style={{ color: "#3d4946" }}>
+            <p className="text-xs pl-1 mt-1" style={{ color: "var(--ink-2)" }}>
               {t.company_name}
             </p>
           )}
@@ -127,32 +127,32 @@ function TickerCard({ t }: { t: TickerData }) {
         <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
           {t.price != null ? (
             <>
-              <p className="text-sm font-semibold" style={{ color: "#171d1b" }}>
+              <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
                 ${t.price.toLocaleString()}
               </p>
               <p
                 className="text-xs font-medium"
-                style={{ color: priceUp ? "#006859" : "#ba1a1a" }}
+                style={{ color: priceUp ? "var(--teal)" : "var(--down)" }}
               >
                 {priceUp ? "+" : ""}{t.change_pct}%
               </p>
             </>
           ) : (
-            <p className="text-xs" style={{ color: "#9eb3ae" }}>No price</p>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>No price</p>
           )}
         </div>
       </div>
 
       {/* Influencer count */}
-      <p className="text-xs" style={{ color: "#3d4946" }}>
-        <span className="font-semibold" style={{ color: "#171d1b" }}>{t.unique_influencers}</span>{" "}
+      <p className="text-xs" style={{ color: "var(--ink-2)" }}>
+        <span className="font-semibold" style={{ color: "var(--ink)" }}>{t.unique_influencers}</span>{" "}
         influencer{t.unique_influencers !== 1 ? "s" : ""} tracking ·{" "}
         {t.mentions} mention{t.mentions !== 1 ? "s" : ""}
       </p>
 
       {/* Sentiment bar */}
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: "#e0ebe6" }}>
+        <div className="flex-1 h-1.5 rounded-full" style={{ backgroundColor: "var(--line)" }}>
           <div
             className="h-1.5 rounded-full"
             style={{
@@ -197,7 +197,7 @@ function TickerCard({ t }: { t: TickerData }) {
             ))}
           </div>
           {t.influencers.length > 4 && (
-            <p className="text-xs" style={{ color: "#3d4946" }}>
+            <p className="text-xs" style={{ color: "var(--ink-2)" }}>
               +{t.influencers.length - 4} more
             </p>
           )}
@@ -216,7 +216,7 @@ function InfluencerHoldingRow({ inf }: { inf: InfluencerHolding }) {
   return (
     <div
       className="rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-3"
-      style={{ backgroundColor: "#ffffff", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
+      style={{ backgroundColor: "var(--card)", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
     >
       {/* Left: avatar + name */}
       <div className="flex items-center gap-3 flex-shrink-0 min-w-0 sm:w-48">
@@ -231,16 +231,16 @@ function InfluencerHoldingRow({ inf }: { inf: InfluencerHolding }) {
         ) : (
           <div
             className="rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold text-white"
-            style={{ width: 48, height: 48, backgroundColor: "#006859" }}
+            style={{ width: 48, height: 48, backgroundColor: "var(--teal)" }}
           >
             {initials}
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: "#171d1b" }}>
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--ink)" }}>
             {inf.display_name}
           </p>
-          <p className="text-xs truncate" style={{ color: "#3d4946" }}>
+          <p className="text-xs truncate" style={{ color: "var(--ink-2)" }}>
             @{handle}
           </p>
         </div>
@@ -252,7 +252,7 @@ function InfluencerHoldingRow({ inf }: { inf: InfluencerHolding }) {
           <span
             key={ticker}
             className="text-xs font-medium px-2.5 py-0.5 rounded-full"
-            style={{ backgroundColor: "#dcfce7", color: "#006859" }}
+            style={{ backgroundColor: "#dcfce7", color: "var(--teal)" }}
           >
             ${ticker}
           </span>
@@ -260,7 +260,7 @@ function InfluencerHoldingRow({ inf }: { inf: InfluencerHolding }) {
         {overflow > 0 && (
           <span
             className="text-xs font-medium px-2.5 py-0.5 rounded-full"
-            style={{ backgroundColor: "#e0ebe6", color: "#3d4946" }}
+            style={{ backgroundColor: "var(--line)", color: "var(--ink-2)" }}
           >
             +{overflow} more
           </span>
@@ -271,9 +271,9 @@ function InfluencerHoldingRow({ inf }: { inf: InfluencerHolding }) {
       <a
         href={`/influencer/${handle}`}
         className="text-xs font-medium flex-shrink-0 whitespace-nowrap transition-colors"
-        style={{ color: "#006859" }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#004d42")}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#006859")}
+        style={{ color: "var(--teal)" }}
+        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--teal-2)")}
+        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--teal)")}
       >
         View Profile →
       </a>
@@ -293,7 +293,7 @@ function RightSidebar({
   loading: boolean;
 }) {
   const Skeleton = () => (
-    <div className="h-4 rounded animate-pulse w-3/4" style={{ backgroundColor: "#e0ebe6" }} />
+    <div className="h-4 rounded animate-pulse w-3/4" style={{ backgroundColor: "var(--line)" }} />
   );
 
   return (
@@ -301,9 +301,9 @@ function RightSidebar({
       {/* Most Convicted */}
       <div
         className="rounded-2xl p-5 flex flex-col gap-3"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
       >
-        <p className="type-label" style={{ color: "#3d4946" }}>Most Convicted</p>
+        <p className="type-label" style={{ color: "var(--ink-2)" }}>Most Convicted</p>
         {loading ? (
           <Skeleton />
         ) : mostConvicted ? (
@@ -311,21 +311,21 @@ function RightSidebar({
             <div className="flex items-center justify-between">
               <span
                 className="text-lg font-bold px-3 py-1 rounded-full"
-                style={{ backgroundColor: "#171d1b", color: "#ffffff" }}
+                style={{ backgroundColor: "var(--ink)", color: "#ffffff" }}
               >
                 ${mostConvicted.ticker}
               </span>
               {mostConvicted.change_pct != null && (
                 <span
                   className="text-sm font-semibold"
-                  style={{ color: mostConvicted.change_pct >= 0 ? "#006859" : "#ba1a1a" }}
+                  style={{ color: mostConvicted.change_pct >= 0 ? "var(--teal)" : "var(--down)" }}
                 >
                   {mostConvicted.change_pct >= 0 ? "+" : ""}{mostConvicted.change_pct}%
                 </span>
               )}
             </div>
-            <p className="text-xs" style={{ color: "#3d4946" }}>
-              <span className="font-semibold" style={{ color: "#171d1b" }}>
+            <p className="text-xs" style={{ color: "var(--ink-2)" }}>
+              <span className="font-semibold" style={{ color: "var(--ink)" }}>
                 {mostConvicted.unique_influencers}
               </span>{" "}
               influencers · {mostConvicted.mentions} mentions
@@ -339,32 +339,32 @@ function RightSidebar({
             </div>
           </div>
         ) : (
-          <p className="text-sm" style={{ color: "#3d4946" }}>No data yet.</p>
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>No data yet.</p>
         )}
       </div>
 
       {/* Consensus Buys */}
       <div
         className="rounded-2xl p-5 flex flex-col gap-3"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
       >
-        <p className="type-label" style={{ color: "#3d4946" }}>Consensus Buys</p>
-        <p className="text-[11px]" style={{ color: "#9eb3ae" }}>3+ influencers with trade calls</p>
+        <p className="type-label" style={{ color: "var(--ink-2)" }}>Consensus Buys</p>
+        <p className="text-[11px]" style={{ color: "var(--muted)" }}>3+ influencers with trade calls</p>
         {loading ? (
           <div className="flex flex-col gap-2"><Skeleton /><Skeleton /></div>
         ) : consensusBuys.length === 0 ? (
-          <p className="text-sm" style={{ color: "#3d4946" }}>No consensus yet.</p>
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>No consensus yet.</p>
         ) : (
           <div className="flex flex-col gap-2">
             {consensusBuys.map((t) => (
               <div key={t.ticker} className="flex items-center justify-between">
                 <span
                   className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                  style={{ backgroundColor: "#e8f5e8", color: "#006859" }}
+                  style={{ backgroundColor: "#e8f5e8", color: "var(--teal)" }}
                 >
                   ${t.ticker}
                 </span>
-                <span className="text-xs" style={{ color: "#3d4946" }}>
+                <span className="text-xs" style={{ color: "var(--ink-2)" }}>
                   {t.unique_influencers} tracking
                 </span>
               </div>
@@ -376,23 +376,23 @@ function RightSidebar({
       {/* Recent Exits */}
       <div
         className="rounded-2xl p-5 flex flex-col gap-3"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 4px 16px rgba(23, 29, 27, 0.06)" }}
       >
-        <p className="type-label" style={{ color: "#3d4946" }}>Recent Exits</p>
+        <p className="type-label" style={{ color: "var(--ink-2)" }}>Recent Exits</p>
         {loading ? (
           <div className="flex flex-col gap-2"><Skeleton /><Skeleton /></div>
         ) : recentExits.length === 0 ? (
-          <p className="text-sm" style={{ color: "#3d4946" }}>No exits yet.</p>
+          <p className="text-sm" style={{ color: "var(--ink-2)" }}>No exits yet.</p>
         ) : (
           <div className="flex flex-col gap-3">
             {recentExits.map((post) => (
               <div
                 key={post.id}
                 className="flex flex-col gap-1 pb-3"
-                style={{ borderBottom: "1px solid #eff5f2" }}
+                style={{ borderBottom: "1px solid var(--teal-soft)" }}
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold" style={{ color: "#171d1b" }}>
+                  <p className="text-xs font-semibold" style={{ color: "var(--ink)" }}>
                     {post.influencer?.display_name ?? "Unknown"}
                   </p>
                   {post.ticker_symbols?.[0] && (
@@ -406,7 +406,7 @@ function RightSidebar({
                 </div>
                 <p
                   className="text-xs line-clamp-2 leading-relaxed"
-                  style={{ color: "#3d4946" }}
+                  style={{ color: "var(--ink-2)" }}
                 >
                   {post.content}
                 </p>
@@ -443,7 +443,7 @@ export default function PortfolioPage() {
   const recentActivity = data?.recent_activity ?? [];
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#f5fbf7" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg-2)" }}>
       <Sidebar />
       <TopNav />
 
@@ -452,13 +452,13 @@ export default function PortfolioPage() {
 
           {/* Page header */}
           <div className="mb-6 md:mb-8 flex flex-col gap-1">
-            <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: "#006859" }}>
+            <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--teal)" }}>
               Collective Intelligence
             </p>
-            <h1 className="text-[1.5rem] md:text-[2.5rem] font-bold leading-tight" style={{ color: "#171d1b" }}>
+            <h1 className="text-[1.5rem] md:text-[2.5rem] font-bold leading-tight" style={{ color: "var(--ink)" }}>
               What Fin X Is Buying, Holding &amp; Watching
             </h1>
-            <p className="text-sm md:text-base" style={{ color: "#3d4946" }}>
+            <p className="text-sm md:text-base" style={{ color: "var(--ink-2)" }}>
               Explicit positions and moves from 35 tracked financial influencers on X
             </p>
           </div>
@@ -467,7 +467,7 @@ export default function PortfolioPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-2xl h-20 animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+                <div key={i} className="rounded-2xl h-20 animate-pulse" style={{ backgroundColor: "var(--line)" }} />
               ))
             ) : (
               <>
@@ -481,7 +481,7 @@ export default function PortfolioPage() {
 
           {/* Error state */}
           {error && (
-            <div className="rounded-2xl p-6 mb-6 text-sm" style={{ backgroundColor: "#fff", color: "#ba1a1a" }}>
+            <div className="rounded-2xl p-6 mb-6 text-sm" style={{ backgroundColor: "var(--card)", color: "var(--down)" }}>
               {error}
             </div>
           )}
@@ -494,10 +494,10 @@ export default function PortfolioPage() {
 
               {/* Section header */}
               <div>
-                <h2 className="text-lg md:text-xl font-bold" style={{ color: "#171d1b" }}>
+                <h2 className="text-lg md:text-xl font-bold" style={{ color: "var(--ink)" }}>
                   Top Collective Holdings
                 </h2>
-                <p className="text-xs md:text-sm mt-0.5" style={{ color: "#3d4946" }}>
+                <p className="text-xs md:text-sm mt-0.5" style={{ color: "var(--ink-2)" }}>
                   Ranked by number of unique influencers tracking each ticker
                 </p>
               </div>
@@ -506,12 +506,12 @@ export default function PortfolioPage() {
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {Array.from({ length: 9 }).map((_, i) => (
-                    <div key={i} className="rounded-2xl h-48 animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+                    <div key={i} className="rounded-2xl h-48 animate-pulse" style={{ backgroundColor: "var(--line)" }} />
                   ))}
                 </div>
               ) : tickers.length === 0 ? (
-                <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: "#ffffff" }}>
-                  <p className="text-sm" style={{ color: "#3d4946" }}>
+                <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: "var(--card)" }}>
+                  <p className="text-sm" style={{ color: "var(--ink-2)" }}>
                     No ticker data yet. Posts will appear after categorization runs.
                   </p>
                 </div>
@@ -526,10 +526,10 @@ export default function PortfolioPage() {
               {/* Influencer Holdings */}
               <div className="flex flex-col gap-4 mt-2">
                 <div>
-                  <h2 className="text-lg md:text-xl font-bold" style={{ color: "#171d1b" }}>
+                  <h2 className="text-lg md:text-xl font-bold" style={{ color: "var(--ink)" }}>
                     Influencer Holdings
                   </h2>
-                  <p className="text-xs md:text-sm mt-0.5" style={{ color: "#3d4946" }}>
+                  <p className="text-xs md:text-sm mt-0.5" style={{ color: "var(--ink-2)" }}>
                     Tickers each influencer has mentioned in trade calls, portfolio and position updates
                   </p>
                 </div>
@@ -537,23 +537,23 @@ export default function PortfolioPage() {
                 {loading ? (
                   <div className="flex flex-col gap-3">
                     {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="rounded-2xl h-16 animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+                      <div key={i} className="rounded-2xl h-16 animate-pulse" style={{ backgroundColor: "var(--line)" }} />
                     ))}
                   </div>
                 ) : influencerHoldings.length === 0 ? (
-                  <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: "#ffffff" }}>
-                    <p className="text-sm" style={{ color: "#3d4946" }}>No holdings data yet.</p>
+                  <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: "var(--card)" }}>
+                    <p className="text-sm" style={{ color: "var(--ink-2)" }}>No holdings data yet.</p>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-3">
                     {influencerHoldings.slice(0, 20).map((inf) => (
                       <InfluencerHoldingRow key={inf.x_handle} inf={inf} />
                     ))}
-                    <p className="text-xs text-center mt-1" style={{ color: "#3d4946" }}>
+                    <p className="text-xs text-center mt-1" style={{ color: "var(--ink-2)" }}>
                       Showing top 20 influencers by holdings activity. View individual profiles on the{" "}
                       <a
                         href="/leaderboard"
-                        style={{ color: "#006859", textDecoration: "underline" }}
+                        style={{ color: "var(--teal)", textDecoration: "underline" }}
                       >
                         Leaderboard
                       </a>
@@ -566,10 +566,10 @@ export default function PortfolioPage() {
               {/* Recent activity */}
               <div className="flex flex-col gap-4 mt-2">
                 <div>
-                  <h2 className="text-lg md:text-xl font-bold" style={{ color: "#171d1b" }}>
+                  <h2 className="text-lg md:text-xl font-bold" style={{ color: "var(--ink)" }}>
                     Latest Influencer Moves
                   </h2>
-                  <p className="text-xs md:text-sm mt-0.5" style={{ color: "#3d4946" }}>
+                  <p className="text-xs md:text-sm mt-0.5" style={{ color: "var(--ink-2)" }}>
                     Trade calls, portfolio updates and position changes
                   </p>
                 </div>
@@ -577,12 +577,12 @@ export default function PortfolioPage() {
                 {loading ? (
                   <div className="flex flex-col gap-4">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="h-40 rounded-2xl animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+                      <div key={i} className="h-40 rounded-2xl animate-pulse" style={{ backgroundColor: "var(--line)" }} />
                     ))}
                   </div>
                 ) : recentActivity.length === 0 ? (
-                  <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: "#ffffff" }}>
-                    <p className="text-sm" style={{ color: "#3d4946" }}>No recent activity.</p>
+                  <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: "var(--card)" }}>
+                    <p className="text-sm" style={{ color: "var(--ink-2)" }}>No recent activity.</p>
                   </div>
                 ) : (
                   <div className="flex flex-col gap-4">

@@ -45,8 +45,8 @@ const RANK_ACCENT: Record<number, string> = {
 
 const ROW_BG: Record<number, string> = {
   1: "color-mix(in oklch, #fbbf24 12%, transparent)",
-  2: "#f8fafc",
-  3: "#fafaf9",
+  2: "var(--bg-2)",
+  3: "var(--bg-2)",
 };
 
 const FREE_TIER_LIMIT = 20;
@@ -61,7 +61,7 @@ function Avatar({ src, name, size = 36 }: { src: string | null; name: string; si
   ) : (
     <div
       className="rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold text-white"
-      style={{ width: size, height: size, backgroundColor: "#006859" }}
+      style={{ width: size, height: size, backgroundColor: "var(--teal)" }}
     >
       {initials}
     </div>
@@ -71,27 +71,27 @@ function Avatar({ src, name, size = 36 }: { src: string | null; name: string; si
 function WinRatePill({ value }: { value: number | null }) {
   if (value === null || value === 0) {
     return (
-      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}>
+      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "var(--bg-3)", color: "var(--muted)" }}>
         N/A
       </span>
     );
   }
   if (value >= 70) {
     return (
-      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#dcfce7", color: "#006859" }}>
+      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "color-mix(in oklch, var(--up) 20%, transparent)", color: "var(--teal)" }}>
         {value === 100 ? "⭐ " : ""}{value}%
       </span>
     );
   }
   if (value >= 50) {
     return (
-      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#fef3c7", color: "#92580a" }}>
+      <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "color-mix(in oklch, #fbbf24 30%, transparent)", color: "oklch(0.52 0.12 60)" }}>
         {value}%
       </span>
     );
   }
   return (
-    <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#fee2e2", color: "#ba1a1a" }}>
+    <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "color-mix(in oklch, var(--down) 18%, transparent)", color: "var(--down)" }}>
       {value}%
     </span>
   );
@@ -99,11 +99,11 @@ function WinRatePill({ value }: { value: number | null }) {
 
 function TransparencyBadge({ value }: { value: boolean }) {
   return value ? (
-    <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#dcfce7", color: "#006859" }}>
+    <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "color-mix(in oklch, var(--up) 20%, transparent)", color: "var(--teal)" }}>
       Posts Losses ✅
     </span>
   ) : (
-    <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "#fef3c7", color: "#d97706" }}>
+    <span className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: "color-mix(in oklch, #fbbf24 30%, transparent)", color: "oklch(0.62 0.15 60)" }}>
       No Losses ⚠️
     </span>
   );
@@ -115,7 +115,7 @@ function StatCard({ label, value, subtitle }: { label: string; value: string | n
     <div
       className="w-full md:flex-1 flex flex-col gap-1"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         border: "1px solid #e5e7eb",
         padding: "16px 18px",
         boxShadow: hovered ? "0px 20px 40px rgba(23, 29, 27, 0.12)" : "0px 12px 32px rgba(23, 29, 27, 0.06)",
@@ -126,15 +126,15 @@ function StatCard({ label, value, subtitle }: { label: string; value: string | n
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <p style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</p>
+      <p style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>{label}</p>
       <p
         className="text-[2rem] md:text-[2rem]"
-        style={{ fontWeight: 600, fontSize: "2rem", letterSpacing: "-0.02em", color: "#0f6e56", lineHeight: 1.1, wordBreak: "break-word", fontFeatureSettings: '"tnum"' }}
+        style={{ fontWeight: 600, fontSize: "2rem", letterSpacing: "-0.02em", color: "var(--teal)", lineHeight: 1.1, wordBreak: "break-word", fontFeatureSettings: '"tnum"' }}
       >
         {value}
       </p>
       {subtitle && (
-        <p style={{ fontSize: "12px", color: "#3d4946", marginTop: 2 }}>
+        <p style={{ fontSize: "12px", color: "var(--ink-2)", marginTop: 2 }}>
           {subtitle}
         </p>
       )}
@@ -144,19 +144,19 @@ function StatCard({ label, value, subtitle }: { label: string; value: string | n
 
 function SkeletonRow() {
   return (
-    <div className="flex items-center gap-4 px-5 py-5" style={{ borderBottom: "1px solid #f5fbf7" }}>
-      <div className="w-8 h-5 rounded animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+    <div className="flex items-center gap-4 px-5 py-5" style={{ borderBottom: "1px solid var(--bg-2)" }}>
+      <div className="w-8 h-5 rounded animate-pulse" style={{ backgroundColor: "var(--line)" }} />
       <div className="flex items-center gap-3 flex-1">
-        <div className="w-9 h-9 rounded-full animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+        <div className="w-9 h-9 rounded-full animate-pulse" style={{ backgroundColor: "var(--line)" }} />
         <div className="flex flex-col gap-1.5">
-          <div className="w-28 h-4 rounded animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
-          <div className="w-20 h-3 rounded animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+          <div className="w-28 h-4 rounded animate-pulse" style={{ backgroundColor: "var(--line)" }} />
+          <div className="w-20 h-3 rounded animate-pulse" style={{ backgroundColor: "var(--line)" }} />
         </div>
       </div>
       {[80, 72, 70, 64].map((w, i) => (
-        <div key={i} className="hidden md:block h-4 rounded animate-pulse" style={{ width: w, backgroundColor: "#e0ebe6" }} />
+        <div key={i} className="hidden md:block h-4 rounded animate-pulse" style={{ width: w, backgroundColor: "var(--line)" }} />
       ))}
-      <div className="w-24 h-8 rounded-full animate-pulse" style={{ backgroundColor: "#e0ebe6" }} />
+      <div className="w-24 h-8 rounded-full animate-pulse" style={{ backgroundColor: "var(--line)" }} />
     </div>
   );
 }
@@ -175,12 +175,12 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
       style={{
         paddingTop: 20,
         paddingBottom: 20,
-        borderBottom: "1px solid #f5fbf7",
+        borderBottom: "1px solid var(--bg-2)",
         borderLeft: `4px solid ${accentColor ?? "transparent"}`,
         backgroundColor: rowBg ?? "transparent",
       }}
       onMouseEnter={(e) => {
-        if (!rowBg) (e.currentTarget as HTMLElement).style.backgroundColor = "oklch(0.965 0.006 95)";
+        if (!rowBg) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-2)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = rowBg ?? "transparent";
@@ -190,7 +190,7 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
       <div className="w-12 flex-shrink-0 flex items-center gap-1.5">
         <span
           style={{
-            color: accentColor ?? "#006859",
+            color: accentColor ?? "var(--teal)",
             fontWeight: isTop3 ? 900 : 700,
             fontSize: isTop3 ? "1.1rem" : "0.875rem",
             lineHeight: 1,
@@ -205,22 +205,22 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <Avatar src={inf.profile_image_url} name={inf.display_name} size={36} />
         <div className="min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: "#171d1b" }}>
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--ink)" }}>
             {inf.display_name}
           </p>
-          <p className="text-[11px]" style={{ color: "#3d4946", opacity: 0.75 }}>
+          <p className="text-[11px]" style={{ color: "var(--ink-2)", opacity: 0.75 }}>
             {inf.x_handle}
           </p>
         </div>
       </div>
 
       {/* Total Signals */}
-      <p className="w-[110px] hidden md:block text-right text-sm font-medium" style={{ color: "#171d1b" }}>
+      <p className="w-[110px] hidden md:block text-right text-sm font-medium" style={{ color: "var(--ink)" }}>
         {inf.total_signals}
       </p>
 
       {/* Trade Calls */}
-      <p className="w-[100px] hidden md:block text-right text-sm font-medium" style={{ color: "#171d1b" }}>
+      <p className="w-[100px] hidden md:block text-right text-sm font-medium" style={{ color: "var(--ink)" }}>
         {inf.trade_calls}
       </p>
 
@@ -239,7 +239,7 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
         {locked ? (
           <div
             className="px-3 py-1.5 rounded-full text-xs font-semibold"
-            style={{ border: "1px solid #e0ebe6", color: "#9eb3ae" }}
+            style={{ border: "1px solid var(--line)", color: "var(--muted)" }}
           >
             View Profile
           </div>
@@ -247,8 +247,8 @@ function LeaderboardRow({ inf, rank, locked = false }: { inf: Influencer; rank: 
           <a
             href={`/influencer/${inf.x_handle.replace(/^@/, "")}`}
             className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
-            style={{ border: "1px solid #006859", color: "#006859", backgroundColor: "transparent" }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2")}
+            style={{ border: "1px solid var(--teal)", color: "var(--teal)", backgroundColor: "transparent" }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")}
           >
             View Profile
@@ -277,7 +277,7 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
     size: number;
     elevated?: boolean;
   }) {
-    const accentColor = RANK_ACCENT[rank] ?? "#006859";
+    const accentColor = RANK_ACCENT[rank] ?? "var(--teal)";
     const truncated =
       inf.display_name.length > 10
         ? inf.display_name.slice(0, 10) + "…"
@@ -295,7 +295,7 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
             <div
               style={{
                 borderRadius: "9999px",
-                border: "3px solid #006859",
+                border: "3px solid var(--teal)",
                 padding: 3,
                 display: "inline-flex",
               }}
@@ -313,7 +313,7 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
               height: 20,
               backgroundColor: accentColor,
               fontSize: "0.6rem",
-              border: "2px solid #ffffff",
+              border: "2px solid var(--card)",
             }}
           >
             {rank}
@@ -328,7 +328,7 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
               fontWeight: 700,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              color: "#006859",
+              color: "var(--teal)",
             }}
           >
             WINNER
@@ -337,11 +337,11 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
 
         <p
           className="text-xs font-semibold text-center"
-          style={{ color: "#171d1b", maxWidth: size + 16 }}
+          style={{ color: "var(--ink)", maxWidth: size + 16 }}
         >
           {truncated}
         </p>
-        <p className="text-xs font-bold" style={{ color: "#006859" }}>
+        <p className="text-xs font-bold" style={{ color: "var(--teal)" }}>
           {winText}
         </p>
       </div>
@@ -352,11 +352,11 @@ function MobilePodium({ top3 }: { top3: Influencer[] }) {
     <div
       className="md:hidden rounded-2xl p-6 flex flex-col gap-5"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
       }}
     >
-      <p className="type-label text-center" style={{ color: "#3d4946" }}>
+      <p className="type-label text-center" style={{ color: "var(--ink-2)" }}>
         Top 3 This Period
       </p>
 
@@ -379,22 +379,22 @@ function MobileRankRow({ inf, rank }: { inf: Influencer; rank: number }) {
       style={{
         paddingTop: 20,
         paddingBottom: 20,
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 2px 8px rgba(23, 29, 27, 0.06)",
       }}
     >
       <p
         className="text-sm font-bold flex-shrink-0 w-6 text-center"
-        style={{ color: "#006859" }}
+        style={{ color: "var(--teal)" }}
       >
         {String(rank).padStart(2, "0")}
       </p>
       <Avatar src={inf.profile_image_url} name={inf.display_name} size={36} />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold" style={{ color: "#171d1b" }}>
+        <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
           {inf.display_name}
         </p>
-        <p className="text-xs" style={{ color: "#3d4946" }}>
+        <p className="text-xs" style={{ color: "var(--ink-2)" }}>
           {inf.total_signals} signals
         </p>
       </div>
@@ -402,12 +402,12 @@ function MobileRankRow({ inf, rank }: { inf: Influencer; rank: number }) {
         {inf.win_rate != null && inf.win_rate > 0 ? (
           <WinRatePill value={inf.win_rate} />
         ) : (
-          <span className="text-xs" style={{ color: "#9eb3ae" }}>No Trades</span>
+          <span className="text-xs" style={{ color: "var(--muted)" }}>No Trades</span>
         )}
         <a
           href={`/influencer/${handle}`}
           className="text-xs font-medium"
-          style={{ color: "#006859" }}
+          style={{ color: "var(--teal)" }}
         >
           View Profile →
         </a>
@@ -443,7 +443,7 @@ export default function LeaderboardPage() {
   const activeLabel = TIMEFRAMES.find((t) => t.days === activeDays)?.label ?? "Last 7 Days";
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "oklch(0.965 0.006 95)" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg-2)" }}>
       <Sidebar />
       <TopNav />
 
@@ -454,9 +454,9 @@ export default function LeaderboardPage() {
           <div className="flex items-start justify-between gap-6 pt-8 md:pt-0">
             <div className="flex flex-col gap-1">
               {/* Performance index label */}
-              <p className="type-label" style={{ color: "#006859" }}>Performance Index</p>
-              <h1 className="type-display" style={{ color: "#171d1b" }}>Fin X Leaderboard</h1>
-              <p className="type-body mt-1 max-w-lg" style={{ color: "#3d4946" }}>
+              <p className="type-label" style={{ color: "var(--teal)" }}>Performance Index</p>
+              <h1 className="type-display" style={{ color: "var(--ink)" }}>Fin X Leaderboard</h1>
+              <p className="type-body mt-1 max-w-lg" style={{ color: "var(--ink-2)" }}>
                 Real-time ranking of financial voices based on AI verification of public entry and exit signals.
               </p>
             </div>
@@ -470,9 +470,9 @@ export default function LeaderboardPage() {
                   onChange={(e) => setActiveDays(Number(e.target.value))}
                   className="appearance-none pl-4 pr-8 py-2 rounded-full text-sm font-medium outline-none cursor-pointer transition-colors"
                   style={{
-                    backgroundColor: "#ffffff",
-                    color: "#171d1b",
-                    border: "1px solid #e0ebe6",
+                    backgroundColor: "var(--card)",
+                    color: "var(--ink)",
+                    border: "1px solid var(--line)",
                     boxShadow: "0px 1px 4px rgba(23,29,27,0.06)",
                   }}
                 >
@@ -483,7 +483,7 @@ export default function LeaderboardPage() {
                 <ChevronDown
                   size={14}
                   className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                  style={{ color: "#3d4946" }}
+                  style={{ color: "var(--ink-2)" }}
                 />
               </div>
 
@@ -491,13 +491,13 @@ export default function LeaderboardPage() {
               <button
                 className="flex items-center gap-2 pl-4 pr-4 py-2 rounded-full text-sm font-medium transition-colors"
                 style={{
-                  backgroundColor: "#ffffff",
-                  color: "#3d4946",
-                  border: "1px solid #e0ebe6",
+                  backgroundColor: "var(--card)",
+                  color: "var(--ink-2)",
+                  border: "1px solid var(--line)",
                   boxShadow: "0px 1px 4px rgba(23,29,27,0.06)",
                 }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2")}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#ffffff")}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--card)")}
               >
                 <SlidersHorizontal size={14} />
                 Filter Metrics
@@ -521,7 +521,7 @@ export default function LeaderboardPage() {
 
               {influencers.slice(3, FREE_TIER_LIMIT).length > 0 && (
                 <>
-                  <p className="type-label mt-1" style={{ color: "#3d4946" }}>
+                  <p className="type-label mt-1" style={{ color: "var(--ink-2)" }}>
                     Ranks 4–{Math.min(FREE_TIER_LIMIT, influencers.length)}
                   </p>
                   <div className="flex flex-col gap-2">
@@ -537,32 +537,32 @@ export default function LeaderboardPage() {
           {/* Leaderboard table card — desktop only */}
           <div
             className="hidden md:block overflow-hidden"
-            style={{ backgroundColor: "#ffffff", borderRadius: "1rem", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
+            style={{ backgroundColor: "var(--card)", borderRadius: "1rem", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
           >
             {/* Table header */}
             <div
               className="flex items-center gap-4 px-5 py-3"
-              style={{ backgroundColor: "#f0f0ee", borderBottom: "1px solid #e0ebe6" }}
+              style={{ backgroundColor: "var(--bg-3)", borderBottom: "1px solid var(--line)" }}
             >
-              <p className="w-12 flex-shrink-0" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Rank</p>
-              <p className="flex-1"             style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Influencer</p>
-              <p className="w-[110px] hidden md:block text-right" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Total</p>
-              <p className="w-[100px] hidden md:block text-right" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Trades</p>
-              <p className="w-[100px] hidden md:block text-right" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Win Rate</p>
-              <p className="w-[110px] hidden md:block text-center" style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Transparency</p>
-              <p className="w-[110px] text-right"                 style={{ color: "#3d4946", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Action</p>
+              <p className="w-12 flex-shrink-0" style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Rank</p>
+              <p className="flex-1"             style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Influencer</p>
+              <p className="w-[110px] hidden md:block text-right" style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Total</p>
+              <p className="w-[100px] hidden md:block text-right" style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Trades</p>
+              <p className="w-[100px] hidden md:block text-right" style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Win Rate</p>
+              <p className="w-[110px] hidden md:block text-center" style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Transparency</p>
+              <p className="w-[110px] text-right"                 style={{ color: "var(--ink-2)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Action</p>
             </div>
 
             {/* Active timeframe label */}
-            <div className="px-5 py-2.5" style={{ backgroundColor: "#f5f5f4", borderBottom: "1px solid #f0f4f2" }}>
-              <p style={{ color: "#006859", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em" }}>{`SHOWING · ${activeLabel.toUpperCase()}`}</p>
+            <div className="px-5 py-2.5" style={{ backgroundColor: "var(--bg-3)", borderBottom: "1px solid #f0f4f2" }}>
+              <p style={{ color: "var(--teal)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10.5px", letterSpacing: "0.12em" }}>{`SHOWING · ${activeLabel.toUpperCase()}`}</p>
             </div>
 
             {/* Body */}
             {loading ? (
               Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
             ) : error ? (
-              <div className="p-8 text-sm text-center" style={{ color: "#ba1a1a" }}>{error}</div>
+              <div className="p-8 text-sm text-center" style={{ color: "var(--down)" }}>{error}</div>
             ) : (
               <div className="relative">
                 {/* Free-tier visible rows */}
@@ -582,12 +582,12 @@ export default function LeaderboardPage() {
                     {/* Upgrade overlay */}
                     <div
                       className="absolute inset-0 flex items-center justify-center"
-                      style={{ background: "linear-gradient(to bottom, rgba(245,251,247,0.4) 0%, rgba(245,251,247,0.92) 30%)" }}
+                      style={{ background: "linear-gradient(to bottom, color-mix(in oklch, var(--bg-2) 40%, transparent) 0%, color-mix(in oklch, var(--bg-2) 92%, transparent) 30%)" }}
                     >
                       <div
                         className="flex flex-col items-center gap-3 text-center mx-6 px-8 py-8"
                         style={{
-                          backgroundColor: "#ffffff",
+                          backgroundColor: "var(--card)",
                           borderRadius: "1rem",
                           boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.10)",
                           maxWidth: 380,
@@ -595,17 +595,17 @@ export default function LeaderboardPage() {
                         }}
                       >
                         <span style={{ fontSize: "2rem" }}>🔒</span>
-                        <p className="text-base font-bold" style={{ color: "#171d1b" }}>
+                        <p className="text-base font-bold" style={{ color: "var(--ink)" }}>
                           Unlock Full Leaderboard
                         </p>
-                        <p className="text-sm" style={{ color: "#3d4946" }}>
+                        <p className="text-sm" style={{ color: "var(--ink-2)" }}>
                           See all {lockedRows.length + FREE_TIER_LIMIT} influencers, full stats and transparency scores
                         </p>
                         <button
                           className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-colors mt-1"
-                          style={{ backgroundColor: "#006859" }}
-                          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#004d42")}
-                          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#006859")}
+                          style={{ backgroundColor: "var(--teal)" }}
+                          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-2)")}
+                          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal)")}
                         >
                           Upgrade to Pro — $9/mo
                         </button>
@@ -620,7 +620,7 @@ export default function LeaderboardPage() {
           {/* Mobile-only hint */}
           <p
             className="md:hidden text-xs text-center"
-            style={{ color: "#9eb3ae" }}
+            style={{ color: "var(--muted)" }}
           >
             View full stats on desktop
           </p>

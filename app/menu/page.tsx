@@ -25,12 +25,12 @@ const MENU_ITEMS = [
 
 export default function MenuPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "#f5fbf7" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg-2)" }}>
 
       {/* ── Profile header card ── */}
       <div
         className="flex flex-col items-center px-6 pt-14 pb-8 gap-4 relative"
-        style={{ backgroundColor: "#006859" }}
+        style={{ backgroundColor: "var(--teal)" }}
       >
         {/* Back link */}
         <Link
@@ -86,7 +86,7 @@ export default function MenuPage() {
       <div
         className="mx-4 mt-5 rounded-2xl overflow-hidden"
         style={{
-          backgroundColor: "#ffffff",
+          backgroundColor: "var(--card)",
           boxShadow: "0px 2px 12px rgba(23, 29, 27, 0.06)",
         }}
       >
@@ -96,27 +96,27 @@ export default function MenuPage() {
             href={href}
             target={external ? "_blank" : undefined}
             rel={external ? "noopener noreferrer" : undefined}
-            className="flex items-center gap-4 px-4 py-4 transition-colors active:bg-[#f5fbf7]"
+            className="flex items-center gap-4 px-4 py-4 transition-colors active:bg-[var(--bg-2)]"
             style={{
-              borderBottom: "1px solid #f5fbf7",
+              borderBottom: "1px solid var(--bg-2)",
               textDecoration: "none",
             }}
           >
             {/* Icon container */}
             <div
               className="flex items-center justify-center rounded-xl flex-shrink-0"
-              style={{ width: 36, height: 36, backgroundColor: "#eff5f2" }}
+              style={{ width: 36, height: 36, backgroundColor: "var(--teal-soft)" }}
             >
-              <Icon size={17} style={{ color: "#006859" }} />
+              <Icon size={17} style={{ color: "var(--teal)" }} />
             </div>
 
             {/* Label */}
-            <p className="flex-1 text-sm font-medium" style={{ color: "#171d1b" }}>
+            <p className="flex-1 text-sm font-medium" style={{ color: "var(--ink)" }}>
               {label}
             </p>
 
             {/* Chevron */}
-            <ChevronRight size={16} style={{ color: "#9eb3ae" }} />
+            <ChevronRight size={16} style={{ color: "var(--muted)" }} />
           </a>
         ))}
 
@@ -130,9 +130,9 @@ export default function MenuPage() {
             className="flex items-center justify-center rounded-xl flex-shrink-0"
             style={{ width: 36, height: 36, backgroundColor: "#fee2e2" }}
           >
-            <LogOut size={17} style={{ color: "#ba1a1a" }} />
+            <LogOut size={17} style={{ color: "var(--down)" }} />
           </div>
-          <p className="flex-1 text-sm font-medium" style={{ color: "#ba1a1a" }}>
+          <p className="flex-1 text-sm font-medium" style={{ color: "var(--down)" }}>
             Sign out
           </p>
         </button>
@@ -141,7 +141,7 @@ export default function MenuPage() {
       {/* Version note */}
       <p
         className="text-center text-xs mt-8 mb-4"
-        style={{ color: "#9eb3ae" }}
+        style={{ color: "var(--muted)" }}
       >
         XFintel · Free Plan
       </p>

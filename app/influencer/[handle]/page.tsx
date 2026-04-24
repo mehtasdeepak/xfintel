@@ -65,14 +65,14 @@ function formatFollowers(n: number | null): string {
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
-  trade_call:      "#006859",
+  trade_call:      "var(--teal)",
   position_update: "#1a56db",
   exit:            "#b45309",
   performance:     "#7c3aed",
   portfolio:       "#0891b2",
   watchlist:       "#d97706",
-  analysis:        "#3d4946",
-  noise:           "#9eb3ae",
+  analysis:        "var(--ink-2)",
+  noise:           "var(--muted)",
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -116,7 +116,7 @@ function ProfileAvatar({ src, name }: { src: string | null; name: string }) {
   ) : (
     <div
       className="rounded-full flex items-center justify-center flex-shrink-0 text-2xl font-bold text-white w-[60px] h-[60px] md:w-[80px] md:h-[80px]"
-      style={{ backgroundColor: "#006859" }}
+      style={{ backgroundColor: "var(--teal)" }}
     >
       {initials}
     </div>
@@ -139,7 +139,7 @@ function ProfileHeader({
     <div
       className="rounded-2xl p-6 flex flex-col gap-5"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: "var(--card)",
         boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
       }}
     >
@@ -152,18 +152,18 @@ function ProfileHeader({
               style={{
                 fontSize: "1.5rem",
                 fontWeight: 600,
-                color: "#171d1b",
+                color: "var(--ink)",
                 lineHeight: 1.2,
               }}
             >
               {influencer.display_name}
             </h1>
-            <p style={{ fontSize: "0.875rem", color: "#3d4946" }}>
+            <p style={{ fontSize: "0.875rem", color: "var(--ink-2)" }}>
               {influencer.x_handle}
             </p>
             {influencer.follower_count != null && (
-              <p style={{ fontSize: "0.75rem", color: "#3d4946", marginTop: 2 }}>
-                <span style={{ fontWeight: 600, color: "#171d1b" }}>
+              <p style={{ fontSize: "0.75rem", color: "var(--ink-2)", marginTop: 2 }}>
+                <span style={{ fontWeight: 600, color: "var(--ink)" }}>
                   {formatFollowers(influencer.follower_count)}
                 </span>{" "}
                 followers
@@ -177,9 +177,9 @@ function ProfileHeader({
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors flex-shrink-0"
-          style={{ backgroundColor: "#006859", color: "#ffffff" }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#004d42")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "#006859")}
+          style={{ backgroundColor: "var(--teal)", color: "#ffffff" }}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-2)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal)")}
         >
           Follow on X ↗
         </a>
@@ -194,7 +194,7 @@ function ProfileHeader({
           gap: 1,
           borderRadius: "0.75rem",
           overflow: "auto",
-          backgroundColor: "#e0ebe6",
+          backgroundColor: "var(--line)",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
@@ -205,32 +205,32 @@ function ProfileHeader({
           {
             label: "Win Rate",
             value: stats.win_rate != null ? `${stats.win_rate}%` : "N/A",
-            color: stats.win_rate != null && stats.win_rate > 50 ? "#006859" : stats.win_rate != null ? "#ba1a1a" : "#3d4946",
+            color: stats.win_rate != null && stats.win_rate > 50 ? "var(--teal)" : stats.win_rate != null ? "var(--down)" : "var(--ink-2)",
           },
           {
             label: "Transparency",
             value: stats.transparency_score ? "Posts Losses ✅" : "No Losses ⚠️",
-            color: stats.transparency_score ? "#006859" : "#d97706",
+            color: stats.transparency_score ? "var(--teal)" : "#d97706",
             small: true,
           },
         ].map(({ label, value, color, small }) => (
           <div
             key={label}
             className="flex flex-col items-center justify-center py-4 px-3"
-            style={{ backgroundColor: "#ffffff" }}
+            style={{ backgroundColor: "var(--card)" }}
           >
             <p
               style={{
                 fontSize: small ? "0.8125rem" : "1.5rem",
                 fontWeight: 700,
-                color: color ?? "#171d1b",
+                color: color ?? "var(--ink)",
                 lineHeight: 1.1,
                 textAlign: "center",
               }}
             >
               {value}
             </p>
-            <p className="type-label mt-1 text-center" style={{ color: "#3d4946" }}>
+            <p className="type-label mt-1 text-center" style={{ color: "var(--ink-2)" }}>
               {label}
             </p>
           </div>
@@ -277,23 +277,23 @@ function FilterPills({
             onClick={() => onChange(key)}
             className="px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex-shrink-0"
             style={{
-              backgroundColor: isActive ? "#006859" : "#ffffff",
-              color: isActive ? "#ffffff" : "#3d4946",
-              border: `1px solid ${isActive ? "#006859" : "#e0ebe6"}`,
+              backgroundColor: isActive ? "var(--teal)" : "var(--card)",
+              color: isActive ? "#ffffff" : "var(--ink-2)",
+              border: `1px solid ${isActive ? "var(--teal)" : "var(--line)"}`,
               whiteSpace: "nowrap",
             }}
             onMouseEnter={(e) => {
-              if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "#eff5f2";
+              if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)";
             }}
             onMouseLeave={(e) => {
-              if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "#ffffff";
+              if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--card)";
             }}
           >
             {label}
             {key !== "all" && counts[key] != null && (
               <span
                 className="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px]"
-                style={{ backgroundColor: isActive ? "rgba(255,255,255,0.25)" : "#eff5f2" }}
+                style={{ backgroundColor: isActive ? "rgba(255,255,255,0.25)" : "var(--teal-soft)" }}
               >
                 {counts[key]}
               </span>
@@ -315,7 +315,7 @@ const PIE_COLORS = [
 function HoldingsPieChart({ holdings }: { holdings: Holding[] }) {
   if (holdings.length === 0) {
     return (
-      <p className="text-sm text-center py-4" style={{ color: "#3d4946" }}>
+      <p className="text-sm text-center py-4" style={{ color: "var(--ink-2)" }}>
         No explicit holdings found in recent posts
       </p>
     );
@@ -323,7 +323,6 @@ function HoldingsPieChart({ holdings }: { holdings: Holding[] }) {
 
   const total = holdings.reduce((s, h) => s + h.count, 0);
 
-  // Build conic-gradient stops
   let cumulative = 0;
   const stops = holdings.map((h, i) => {
     const pct = (h.count / total) * 100;
@@ -352,10 +351,10 @@ function HoldingsPieChart({ holdings }: { holdings: Holding[] }) {
               className="rounded-full flex-shrink-0"
               style={{ width: 10, height: 10, backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
             />
-            <span className="text-xs font-semibold flex-1" style={{ color: "#171d1b" }}>
+            <span className="text-xs font-semibold flex-1" style={{ color: "var(--ink)" }}>
               ${h.ticker}
             </span>
-            <span className="text-xs" style={{ color: "#3d4946" }}>
+            <span className="text-xs" style={{ color: "var(--ink-2)" }}>
               {h.count} mention{h.count !== 1 ? "s" : ""}
             </span>
           </div>
@@ -363,7 +362,7 @@ function HoldingsPieChart({ holdings }: { holdings: Holding[] }) {
       </div>
 
       {/* Disclaimer */}
-      <p className="text-[10px] text-center leading-relaxed" style={{ color: "#9eb3ae" }}>
+      <p className="text-[10px] text-center leading-relaxed" style={{ color: "var(--muted)" }}>
         Based on public posts only. Not verified financial data.
       </p>
     </div>
@@ -379,13 +378,13 @@ function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) 
       {/* Claimed holdings pie chart */}
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
       >
-        <div className="px-5 py-3 flex items-center gap-2" style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}>
-          <p className="type-label" style={{ color: "#3d4946" }}>Claimed Holdings</p>
+        <div className="px-5 py-3 flex items-center gap-2" style={{ backgroundColor: "var(--bg-2)", borderBottom: "1px solid var(--line)" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>Claimed Holdings</p>
           <span
             className="text-xs rounded-full flex items-center justify-center cursor-default flex-shrink-0"
-            style={{ width: 16, height: 16, backgroundColor: "#e0ebe6", color: "#3d4946", fontSize: 10, fontWeight: 700 }}
+            style={{ width: 16, height: 16, backgroundColor: "var(--line)", color: "var(--ink-2)", fontSize: 10, fontWeight: 700 }}
             title="Based on explicit buy/hold statements in posts"
           >
             i
@@ -399,17 +398,17 @@ function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) 
       {/* Category breakdown */}
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
       >
-        <div className="px-5 py-3" style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}>
-          <p className="type-label" style={{ color: "#3d4946" }}>Post Breakdown</p>
+        <div className="px-5 py-3" style={{ backgroundColor: "var(--bg-2)", borderBottom: "1px solid var(--line)" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>Post Breakdown</p>
         </div>
         <div className="flex flex-col gap-3 p-4">
           {stats.category_breakdown.length === 0 ? (
-            <p className="text-sm text-center py-4" style={{ color: "#3d4946" }}>No data</p>
+            <p className="text-sm text-center py-4" style={{ color: "var(--ink-2)" }}>No data</p>
           ) : (
             stats.category_breakdown.map(({ category, count, pct }) => {
-              const color = CATEGORY_COLOR[category] ?? "#9eb3ae";
+              const color = CATEGORY_COLOR[category] ?? "var(--muted)";
               const label = CATEGORY_LABEL[category] ?? category;
               return (
                 <div key={category} className="flex flex-col gap-1">
@@ -419,18 +418,18 @@ function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) 
                         className="flex-shrink-0 rounded-full"
                         style={{ width: 8, height: 8, backgroundColor: color }}
                       />
-                      <p className="text-xs font-medium truncate" style={{ color: "#171d1b" }}>
+                      <p className="text-xs font-medium truncate" style={{ color: "var(--ink)" }}>
                         {label}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <p className="text-xs" style={{ color: "#3d4946" }}>{count}</p>
+                      <p className="text-xs" style={{ color: "var(--ink-2)" }}>{count}</p>
                       <p className="text-xs font-semibold w-8 text-right" style={{ color }}>
                         {pct}%
                       </p>
                     </div>
                   </div>
-                  <div className="h-1.5 rounded-full w-full" style={{ backgroundColor: "#eff5f2" }}>
+                  <div className="h-1.5 rounded-full w-full" style={{ backgroundColor: "var(--teal-soft)" }}>
                     <div
                       className="h-1.5 rounded-full transition-all"
                       style={{ width: `${pct}%`, backgroundColor: color }}
@@ -446,31 +445,31 @@ function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) 
       {/* Top mentioned tickers */}
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
       >
-        <div className="px-5 py-3" style={{ backgroundColor: "#f5fbf7", borderBottom: "1px solid #e0ebe6" }}>
-          <p className="type-label" style={{ color: "#3d4946" }}>Top Tickers</p>
+        <div className="px-5 py-3" style={{ backgroundColor: "var(--bg-2)", borderBottom: "1px solid var(--line)" }}>
+          <p className="type-label" style={{ color: "var(--ink-2)" }}>Top Tickers</p>
         </div>
         {stats.most_mentioned_tickers.length === 0 ? (
-          <p className="text-sm text-center py-6" style={{ color: "#3d4946" }}>No tickers found</p>
+          <p className="text-sm text-center py-6" style={{ color: "var(--ink-2)" }}>No tickers found</p>
         ) : (
           <div className="flex flex-col">
             {stats.most_mentioned_tickers.map((t, idx) => (
               <div
                 key={t.ticker}
                 className="flex items-center gap-3 px-5 py-3"
-                style={{ borderBottom: idx < stats.most_mentioned_tickers.length - 1 ? "1px solid #f5fbf7" : "none" }}
+                style={{ borderBottom: idx < stats.most_mentioned_tickers.length - 1 ? "1px solid var(--bg-2)" : "none" }}
               >
-                <p className="text-xs font-bold w-5 flex-shrink-0" style={{ color: "#3d4946" }}>
+                <p className="text-xs font-bold w-5 flex-shrink-0" style={{ color: "var(--ink-2)" }}>
                   {String(idx + 1).padStart(2, "0")}
                 </p>
                 <span
                   className="text-sm font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: "#eff5f2", color: "#006859" }}
+                  style={{ backgroundColor: "var(--teal-soft)", color: "var(--teal)" }}
                 >
                   ${t.ticker}
                 </span>
-                <p className="flex-1 text-xs" style={{ color: "#3d4946" }}>
+                <p className="flex-1 text-xs" style={{ color: "var(--ink-2)" }}>
                   {t.count} mention{t.count !== 1 ? "s" : ""}
                 </p>
               </div>
@@ -482,13 +481,13 @@ function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) 
       {/* Most active time */}
       <div
         className="rounded-2xl p-5 flex flex-col gap-2"
-        style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
+        style={{ backgroundColor: "var(--card)", boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)" }}
       >
-        <p className="type-label" style={{ color: "#3d4946" }}>Most Active</p>
-        <p className="text-sm font-semibold" style={{ color: "#171d1b" }}>
+        <p className="type-label" style={{ color: "var(--ink-2)" }}>Most Active</p>
+        <p className="text-sm font-semibold" style={{ color: "var(--ink)" }}>
           {TIME_LABEL[stats.most_active_time] ?? stats.most_active_time}
         </p>
-        <p className="text-xs" style={{ color: "#3d4946" }}>
+        <p className="text-xs" style={{ color: "var(--ink-2)" }}>
           Based on post timestamps (UTC)
         </p>
       </div>
@@ -501,15 +500,15 @@ function RightPanel({ stats, holdings }: { stats: Stats; holdings: Holding[] }) 
 
 function HeaderSkeleton() {
   return (
-    <div className="rounded-2xl p-6 flex flex-col gap-5 animate-pulse" style={{ backgroundColor: "#ffffff", boxShadow: "0px 12px 32px rgba(23,29,27,0.06)" }}>
+    <div className="rounded-2xl p-6 flex flex-col gap-5 animate-pulse" style={{ backgroundColor: "var(--card)", boxShadow: "0px 12px 32px rgba(23,29,27,0.06)" }}>
       <div className="flex items-center gap-4">
-        <div className="rounded-full flex-shrink-0" style={{ width: 80, height: 80, backgroundColor: "#e0ebe6" }} />
+        <div className="rounded-full flex-shrink-0" style={{ width: 80, height: 80, backgroundColor: "var(--line)" }} />
         <div className="flex flex-col gap-2">
-          <div className="h-6 w-40 rounded" style={{ backgroundColor: "#e0ebe6" }} />
-          <div className="h-4 w-24 rounded" style={{ backgroundColor: "#e0ebe6" }} />
+          <div className="h-6 w-40 rounded" style={{ backgroundColor: "var(--line)" }} />
+          <div className="h-4 w-24 rounded" style={{ backgroundColor: "var(--line)" }} />
         </div>
       </div>
-      <div className="h-20 rounded-xl" style={{ backgroundColor: "#e0ebe6" }} />
+      <div className="h-20 rounded-xl" style={{ backgroundColor: "var(--line)" }} />
     </div>
   );
 }
@@ -545,7 +544,6 @@ export default function InfluencerProfilePage({
       .finally(() => setLoading(false));
   }, [handle]);
 
-  // Inject influencer into each post so PostCard can render the avatar/name
   const posts: Post[] = rawPosts.map((p) => ({
     ...p,
     influencer: influencer
@@ -560,7 +558,6 @@ export default function InfluencerProfilePage({
   const filteredPosts =
     activeFilter === "all" ? posts : posts.filter((p) => p.category === activeFilter);
 
-  // Count per category for filter pill badges
   const categoryCounts = rawPosts.reduce<Record<string, number>>((acc, p) => {
     if (p.category && p.category !== "noise") {
       acc[p.category] = (acc[p.category] ?? 0) + 1;
@@ -569,7 +566,7 @@ export default function InfluencerProfilePage({
   }, {});
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: "#f5fbf7" }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg-2)" }}>
       <Sidebar />
       <TopNav />
 
@@ -584,9 +581,9 @@ export default function InfluencerProfilePage({
             <a
               href="/leaderboard"
               className="text-xs font-medium transition-colors"
-              style={{ color: "#006859" }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "#004d42")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "#006859")}
+              style={{ color: "var(--teal)" }}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--teal-2)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--teal)")}
             >
               ← Back to Leaderboard
             </a>
@@ -594,7 +591,7 @@ export default function InfluencerProfilePage({
 
           {/* Error */}
           {error && (
-            <div className="rounded-2xl p-6 text-sm" style={{ backgroundColor: "#ffffff", color: "#ba1a1a" }}>
+            <div className="rounded-2xl p-6 text-sm" style={{ backgroundColor: "var(--card)", color: "var(--down)" }}>
               {error === "Influencer not found"
                 ? `No influencer found for @${handle}.`
                 : error}
@@ -612,7 +609,7 @@ export default function InfluencerProfilePage({
           {!loading && !error && influencer && stats && (
             <div className="flex flex-col md:flex-row gap-5 items-start">
 
-              {/* Top/Left — posts feed (full width on mobile, 60% on desktop) */}
+              {/* Top/Left — posts feed */}
               <div className="flex flex-col gap-4 w-full md:w-auto md:flex-none" style={{ flex: "3", minWidth: 0 }}>
                 <FilterPills
                   active={activeFilter}
@@ -623,7 +620,7 @@ export default function InfluencerProfilePage({
                 {filteredPosts.length === 0 ? (
                   <div
                     className="rounded-2xl p-10 text-center text-sm"
-                    style={{ backgroundColor: "#ffffff", color: "#3d4946" }}
+                    style={{ backgroundColor: "var(--card)", color: "var(--ink-2)" }}
                   >
                     No posts in this category.
                   </div>
@@ -634,7 +631,7 @@ export default function InfluencerProfilePage({
                 )}
               </div>
 
-              {/* Bottom/Right — sidebar (full width on mobile, 40% on desktop) */}
+              {/* Bottom/Right — sidebar */}
               <div className="w-full md:w-auto md:flex-none" style={{ flex: "2", minWidth: 0 }}>
                 <RightPanel stats={stats} holdings={holdings} />
               </div>

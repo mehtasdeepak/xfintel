@@ -37,13 +37,13 @@ function NavItem({
       onClick={onClick}
       className="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors"
       style={{
-        color: active ? "#006859" : "#3d4946",
-        backgroundColor: active ? "rgba(0, 104, 89, 0.10)" : "transparent",
+        color: active ? "var(--teal)" : "var(--ink-2)",
+        backgroundColor: active ? "var(--teal-soft)" : "transparent",
       }}
       onMouseEnter={(e) => {
         if (!active)
           (e.currentTarget as HTMLElement).style.backgroundColor =
-            "rgba(0, 104, 89, 0.06)";
+            "color-mix(in oklch, var(--teal) 6%, transparent)";
       }}
       onMouseLeave={(e) => {
         if (!active)
@@ -63,10 +63,10 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-6 py-6">
-        <p className="text-xl font-bold" style={{ color: "#006859" }}>
+        <p className="text-xl font-bold" style={{ color: "var(--teal)" }}>
           XFintel
         </p>
-        <p className="text-xs mt-0.5" style={{ color: "#3d4946" }}>
+        <p className="text-xs mt-0.5" style={{ color: "var(--ink-2)" }}>
           X Financial Intelligence
         </p>
       </div>
@@ -90,7 +90,7 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
         {/* Upgrade card */}
         <div
           className="rounded-xl p-4 flex flex-col gap-3"
-          style={{ backgroundColor: "#006859" }}
+          style={{ backgroundColor: "var(--teal)" }}
         >
           <div>
             <p className="text-sm font-semibold text-white">Upgrade to Pro</p>
@@ -101,12 +101,12 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           </div>
           <button
             className="w-full text-xs font-semibold py-2 rounded-lg transition-colors"
-            style={{ backgroundColor: "#ffffff", color: "#006859" }}
+            style={{ backgroundColor: "var(--card)", color: "var(--teal)" }}
             onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor = "#e0ebe6")
+              ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--line)")
             }
             onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor = "#ffffff")
+              ((e.currentTarget as HTMLElement).style.backgroundColor = "var(--card)")
             }
           >
             Get Access
@@ -118,10 +118,10 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           <Link
             href="/settings"
             className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors"
-            style={{ color: "#3d4946" }}
+            style={{ color: "var(--ink-2)" }}
             onMouseEnter={(e) =>
               ((e.currentTarget as HTMLElement).style.backgroundColor =
-                "rgba(0, 104, 89, 0.06)")
+                "color-mix(in oklch, var(--teal) 6%, transparent)")
             }
             onMouseLeave={(e) =>
               ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")
@@ -133,10 +133,10 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           <Link
             href="/support"
             className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors"
-            style={{ color: "#3d4946" }}
+            style={{ color: "var(--ink-2)" }}
             onMouseEnter={(e) =>
               ((e.currentTarget as HTMLElement).style.backgroundColor =
-                "rgba(0, 104, 89, 0.06)")
+                "color-mix(in oklch, var(--teal) 6%, transparent)")
             }
             onMouseLeave={(e) =>
               ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")
@@ -159,8 +159,8 @@ export default function Sidebar() {
         className="hidden md:flex flex-col fixed left-0 top-0 h-screen z-40"
         style={{
           width: "220px",
-          backgroundColor: "#ffffff",
-          boxShadow: "2px 0px 8px rgba(23, 29, 27, 0.04)",
+          backgroundColor: "var(--card)",
+          borderRight: "1px solid var(--line)",
         }}
       >
         <SidebarContent />
