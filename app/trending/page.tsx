@@ -736,9 +736,17 @@ export default function TrendingPage() {
           {/* Page header */}
           <div className="flex items-start justify-between gap-4 pt-8 md:pt-0">
             <div className="flex flex-col gap-1">
-              <p className="type-label" style={{ color: "var(--teal)" }}>Market Intelligence</p>
-              <h1 className="type-display" style={{ color: "var(--ink)" }}>Trending Stocks</h1>
-              <p className="type-body mt-1 max-w-lg" style={{ color: "var(--ink-2)" }}>
+              <p style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "11px",
+                color: "var(--teal)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase" as const,
+                fontWeight: 500,
+                marginBottom: 8,
+              }}>Market Intelligence</p>
+              <h1 style={{ fontSize: "34px", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", margin: "0 0 8px" }}>Trending Stocks</h1>
+              <p className="max-w-lg" style={{ fontSize: "14px", color: "var(--ink-2)", lineHeight: 1.55 }}>
                 Real-time social sentiment analysis from your tracked financial influencers on X
               </p>
             </div>

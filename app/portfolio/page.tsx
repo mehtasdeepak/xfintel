@@ -452,13 +452,19 @@ export default function PortfolioPage() {
 
           {/* Page header */}
           <div className="mb-6 md:mb-8 flex flex-col gap-1">
-            <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--teal)" }}>
-              Collective Intelligence
-            </p>
-            <h1 className="text-[1.5rem] md:text-[2.5rem] font-bold leading-tight" style={{ color: "var(--ink)" }}>
+            <p style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "11px",
+              color: "var(--teal)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase" as const,
+              fontWeight: 500,
+              marginBottom: 8,
+            }}>Your Portfolio</p>
+            <h1 style={{ fontSize: "34px", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", margin: "0 0 8px" }}>
               What Fin X Is Buying, Holding &amp; Watching
             </h1>
-            <p className="text-sm md:text-base" style={{ color: "var(--ink-2)" }}>
+            <p style={{ fontSize: "14px", color: "var(--ink-2)", lineHeight: 1.55 }}>
               Explicit positions and moves from 35 tracked financial influencers on X
             </p>
           </div>

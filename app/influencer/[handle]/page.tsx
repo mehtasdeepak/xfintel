@@ -148,14 +148,16 @@ function ProfileHeader({
         <div className="flex items-center gap-4">
           <ProfileAvatar src={influencer.profile_image_url} name={influencer.display_name} />
           <div className="flex flex-col gap-0.5">
-            <h1
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: 600,
-                color: "var(--ink)",
-                lineHeight: 1.2,
-              }}
-            >
+            <p style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "11px",
+              color: "var(--teal)",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase" as const,
+              fontWeight: 500,
+              marginBottom: 8,
+            }}>Influencer Profile</p>
+            <h1 style={{ fontSize: "34px", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", margin: "0 0 8px" }}>
               {influencer.display_name}
             </h1>
             <p style={{ fontSize: "0.875rem", color: "var(--ink-2)" }}>
