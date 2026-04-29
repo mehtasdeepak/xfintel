@@ -209,18 +209,18 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const supabase = createClient();
 
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        window.location.href = '/feed';
+      }
+    });
+  }, []);
+
   const flashConsent = () => {
     const el = document.querySelector('.consent') as HTMLElement | null;
     if (el) { el.style.color = 'var(--down)'; setTimeout(() => { el.style.color = ''; }, 1200); }
-  };
-
-  const go = (provider: string) => {
-    if (!agree) { flashConsent(); return; }
-    setLoading(provider);
-    setTimeout(() => {
-      try { localStorage.setItem('xfintel.authed', '1'); localStorage.setItem('xfintel.provider', provider); } catch (e) {}
-      window.location.href = '/onboarding';
-    }, 1400);
   };
 
   const signInWithX = async () => {
@@ -302,9 +302,6 @@ export default function RegisterPage() {
                 <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, and understand XFintel does not provide investment advice.</span>
               </label>
 
-              <div className="reg-alt">
-                Already have an account?<a href="#" onClick={(e) => { e.preventDefault(); go('x'); }}>Sign in</a>
-              </div>
             </div>
           </div>
 
