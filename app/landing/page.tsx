@@ -275,7 +275,7 @@ function Nav({ onTheme, theme }: { onTheme: () => void; theme: string }) {
         <Brand />
         <div className="nav-links">
           <a href="#how">How it works</a>
-          <a href="#curators">Curators</a>
+          <a href="#finx-leaders">FinX Leaders</a>
           <a href="#feed">Live feed</a>
         </div>
         <div className="nav-cta">
@@ -340,7 +340,7 @@ function HeroTerminal() {
     <div className="terminal reveal in" id="demo">
       <div className="terminal-head">
         <div className="lights"><span/><span/><span/></div>
-        <span className="title">xfintel://curators/live</span>
+        <span className="title">xfintel://finx-leaders/live</span>
         <span className="status"><span className="live"/>STREAMING</span>
       </div>
       <div className="demo-body" style={{minHeight:420}}>
@@ -348,7 +348,7 @@ function HeroTerminal() {
           <div className={`signal-card ${i===0?'new':''}`} key={`${s.handle}-${idx}-${i}`}>
             <div className="signal-top">
               <div className="avatar">{s.initials}</div>
-              <div className="handle">{s.handle}<span className="muted">· curator #{(12+i).toString().padStart(3,'0')}</span></div>
+              <div className="handle">{s.handle}<span className="muted">· FinX leader #{(12+i).toString().padStart(3,'0')}</span></div>
               <div className="ts">{s.time}</div>
             </div>
             <div className="signal-text">{highlight(s.text, s.ticker)}</div>
@@ -454,12 +454,12 @@ function PerfCard() {
 
 function Performance() {
   return (
-    <section className="section" id="curators">
+    <section className="section" id="finx-leaders">
       <div className="wrap">
         <div className="section-head">
           <div>
             <span className="section-kicker">§ 01 — Evidence, not vibes</span>
-            <h2>Proven curator <span className="serif">performance.</span></h2>
+            <h2>Proven FinX leader <span className="serif">performance.</span></h2>
           </div>
           <p className="section-lead">
             We hand-picked 50 of the most-followed FinX leaders on X. Every call is timestamped, graded against market close, and ranked — so you&apos;re trading on a verified moat, not blind trust.
@@ -660,24 +660,13 @@ function Why() {
 }
 
 function FinalCTA() {
-  const [email, setEmail] = useState('');
-  const [ok, setOk] = useState(false);
   return (
     <section id="cta" className="final-cta">
       <div className="final-cta-inner reveal">
         <h2>Get free <span className="serif">access today.</span></h2>
         <p>Free while we&apos;re in beta. No credit card, no seat minimums, no lock-in. Sign in with X in seconds — we&apos;ll score the rest.</p>
-        {!ok ? (
-          <div className="waitlist">
-            <input type="email" placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} />
-            <button onClick={()=>{if(email){setOk(true)}}}>Get early access</button>
-          </div>
-        ) : (
-          <div className="waitlist"><span className="ok">✓ You&apos;re on the list — we&apos;ll be in touch.</span></div>
-        )}
         <div className="final-ctas">
-          <a href="/register" className="btn btn-primary btn-lg">Get free access <I.arrow /></a>
-          <a href="/register" className="btn btn-ghost-light btn-lg">Sign in</a>
+          <a href="/register" className="btn btn-primary btn-lg">Get Free Access <I.arrow /></a>
         </div>
         <div className="final-meta">BETA · SOC-2 IN PROGRESS · NO CARD REQUIRED</div>
       </div>
