@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get("category") ?? null;
   const limit = Math.min(parseInt(searchParams.get("limit") ?? String(DEFAULT_LIMIT), 10), 100);
   const offset = parseInt(searchParams.get("offset") ?? "0", 10);
+  const influencerIds = searchParams.get("influencer_ids");
 
   let query = supabase
     .from("posts")
@@ -32,6 +33,11 @@ export async function GET(req: NextRequest) {
     `)
     .order("posted_at", { ascending: false })
     .range(offset, offset + limit - 1);
+
+  if (influencerIds) {
+    const ids = influencerIds.split(",").filter(Boolean);
+    if (ids.length > 0) query = query.in("influencer_id", ids);
+  }
 
   if (category && category !== "all") {
     query = query.eq("category", category);

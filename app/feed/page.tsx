@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase-browser";
 import { Search, Bell } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import PostCard, { type Post } from "@/components/PostCard";
@@ -30,15 +31,34 @@ export default function SignalFeedPage() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [offset, setOffset] = useState(0);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [pickedIds, setPickedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from('user_profiles')
+        .select('picked_influencer_ids')
+        .eq('user_id', user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.picked_influencer_ids?.length > 0) {
+            setPickedIds(data.picked_influencer_ids);
+          }
+        });
+    });
+  }, []);
 
   const fetchPosts = useCallback(
-    async (filter: string, currentOffset: number, append: boolean) => {
+    async (filter: string, currentOffset: number, append: boolean, ids: string[] = []) => {
       try {
         const params = new URLSearchParams({
           limit: String(LIMIT),
           offset: String(currentOffset),
         });
         if (filter !== "all") params.set("category", filter);
+        if (ids.length > 0) params.set("influencer_ids", ids.join(","));
 
         const res = await fetch(`/api/feed?${params}`);
         if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
@@ -58,20 +78,20 @@ export default function SignalFeedPage() {
     setLoading(true);
     setError(null);
     setOffset(0);
-    fetchPosts(activeFilter, 0, false).finally(() => setLoading(false));
-  }, [activeFilter, fetchPosts]);
+    fetchPosts(activeFilter, 0, false, pickedIds).finally(() => setLoading(false));
+  }, [activeFilter, fetchPosts, pickedIds]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchPosts(activeFilter, 0, false);
+      fetchPosts(activeFilter, 0, false, pickedIds);
     }, 60_000);
     return () => clearInterval(interval);
-  }, [activeFilter, fetchPosts]);
+  }, [activeFilter, fetchPosts, pickedIds]);
 
   const handleLoadMore = async () => {
     const nextOffset = offset + LIMIT;
     setLoadingMore(true);
-    await fetchPosts(activeFilter, nextOffset, true);
+    await fetchPosts(activeFilter, nextOffset, true, pickedIds);
     setOffset(nextOffset);
     setLoadingMore(false);
   };
@@ -169,6 +189,12 @@ export default function SignalFeedPage() {
                   </p>
                 </div>
               )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <a href="/onboarding" style={{ fontSize: "12px", color: "var(--muted)", marginLeft: "auto" }}>
+                ✦ Customize Feed
+              </a>
             </div>
 
             <div

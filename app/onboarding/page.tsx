@@ -1,7 +1,7 @@
 /* eslint-disable */
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
 const APP_CSS = `
@@ -135,33 +135,27 @@ const Check = () => (
   </svg>
 );
 
-const LEADERS = [
-  { id: 'heisenberg', n: 'Heisenberg', h: '@Mr_Derivatives', c: 'c1', tags: ['Derivatives', 'Options'], calls: '4.2K', win: '68%', ret: '+142%', dir: 'up', pop: true },
-  { id: 'shay', n: 'Shay Boloor', h: '@StockSavvyShay', c: 'c2', tags: ['Growth', 'AI'], calls: '2.8K', win: '71%', ret: '+98%', dir: 'up', pop: true },
-  { id: 'mourinho', n: 'Retail Mourinho', h: '@retail_mourinho', c: 'c3', tags: ['Swing', 'Retail'], calls: '1.9K', win: '64%', ret: '+86%', dir: 'up' },
-  { id: 'photon', n: 'Photon Capital', h: '@PhotonCap', c: 'c4', tags: ['Macro', 'Quant'], calls: '3.1K', win: '59%', ret: '+112%', dir: 'up' },
-  { id: 'gublo', n: 'Gublo 🇨🇦', h: '@Gubloinvestor', c: 'c5', tags: ['Value', 'Small-cap'], calls: '1.2K', win: '74%', ret: '+214%', dir: 'up' },
-  { id: 'ronnie', n: 'RonnieV', h: '@TheRonnieVShow', c: 'c6', tags: ['Momentum', 'Daytrade'], calls: '2.4K', win: '62%', ret: '+58%', dir: 'up' },
-  { id: 'serenity', n: 'Serenity', h: '@aleabitoreddit', c: 'c1', tags: ['Thesis', 'Small-cap'], calls: '980', win: '81%', ret: '+260%', dir: 'up', pop: true },
-  { id: 'cole', n: "Cole's Trades", h: '@ColesTrades', c: 'c2', tags: ['Swing', 'Education'], calls: '1.5K', win: '66%', ret: '+74%', dir: 'up' },
-  { id: 'pepe', n: 'Pepe Invests', h: '@pepemoonboy', c: 'c3', tags: ['Momentum', 'Meme'], calls: '2.1K', win: '57%', ret: '+41%', dir: 'up' },
-  { id: 'mavens', n: 'LLM Maven', h: '@GeeFingBeeMan', c: 'c4', tags: ['AI', 'Thesis'], calls: '640', win: '69%', ret: '+88%', dir: 'up' },
-  { id: 'macro_owl', n: 'Macro Owl', h: '@macro_owl', c: 'c5', tags: ['Macro', 'Rates'], calls: '3.4K', win: '63%', ret: '+46%', dir: 'up' },
-  { id: 'vol', n: 'Vol Shaman', h: '@vol_shaman', c: 'c6', tags: ['Vol arb', 'Derivatives'], calls: '1.1K', win: '72%', ret: '+124%', dir: 'up' },
-];
-
-const FILTERS = ['All', 'Derivatives', 'Growth', 'Macro', 'Value', 'Momentum', 'Swing', 'AI'];
-
 export default function OnboardingPage() {
   const [picked, setPicked] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState('All');
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState(0);
+  const [leaders, setLeaders] = useState<any[]>([]);
+  const [loadingLeaders, setLoadingLeaders] = useState(true);
 
-  const filtered = useMemo(() => {
-    if (filter === 'All') return LEADERS;
-    return LEADERS.filter(l => l.tags.includes(filter));
-  }, [filter]);
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from('influencers')
+      .select('id, display_name, x_handle, profile_image_url')
+      .eq('is_active', true)
+      .order('display_name', { ascending: true })
+      .then(({ data }) => {
+        setLeaders(data ?? []);
+        setLoadingLeaders(false);
+      });
+  }, []);
+
+  const filtered = leaders;
 
   const toggle = (id: string) => {
     setPicked(p => {
@@ -187,7 +181,7 @@ export default function OnboardingPage() {
         const supabase = createClient();
         supabase.auth.getUser().then(({ data }) => {
           if (data.user) {
-            supabase.from('user_profiles').upsert({ user_id: data.user.id }).then(() => {
+            supabase.from('user_profiles').upsert({ user_id: data.user.id, picked_influencer_ids: Array.from(picked) }).then(() => {
               window.location.href = '/feed';
             });
           } else {
@@ -228,38 +222,29 @@ export default function OnboardingPage() {
             <p className="ob-sub">Your feed personalizes to what these leaders post — their BUYs, SELLs, theses, and deleted tweets. You can edit the list anytime.</p>
           </div>
 
-          <div className="ob-filter">
-            {FILTERS.map(f => (
-              <button key={f} className={`ob-chip ${filter === f ? 'on' : ''}`} onClick={() => setFilter(f)}>{f}</button>
-            ))}
-          </div>
-
-          <div className="leaders">
-            {filtered.map(l => {
-              const on = picked.has(l.id);
-              return (
-                <button key={l.id} className={`leader ${on ? 'on' : ''}`} onClick={() => toggle(l.id)} aria-pressed={on}>
-                  <div className="check"><Check /></div>
-                  <div className="l-top">
-                    <div className={`l-ava ${l.c}`}>{l.n.split(' ').map((w: string) => w[0]).slice(0, 2).join('')}</div>
-                    <div>
-                      <div className="l-name">{l.n} <V /></div>
-                      <div className="l-handle">{l.h}</div>
+          {loadingLeaders ? (
+            <p style={{ textAlign: 'center', color: 'var(--muted)', fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}>Loading leaders…</p>
+          ) : (
+            <div className="leaders">
+              {filtered.map(inf => {
+                const on = picked.has(inf.id);
+                return (
+                  <button key={inf.id} className={`leader ${on ? 'on' : ''}`} onClick={() => toggle(inf.id)} aria-pressed={on}>
+                    <div className="check"><Check /></div>
+                    <div className="l-top">
+                      {inf.profile_image_url
+                        ? <img src={inf.profile_image_url} alt={inf.display_name} className="l-ava" style={{ objectFit: 'cover' }} />
+                        : <div className="l-ava">{inf.display_name?.[0]?.toUpperCase()}</div>}
+                      <div>
+                        <div className="l-name">{inf.display_name} <V /></div>
+                        <div className="l-handle">{inf.x_handle}</div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="l-stats">
-                    <div className="l-stat"><div className="k">Calls</div><div className="v">{l.calls}</div></div>
-                    <div className="l-stat"><div className="k">Win rate</div><div className="v up">{l.win}</div></div>
-                    <div className="l-stat"><div className="k">90d return</div><div className="v up">{l.ret}</div></div>
-                  </div>
-                  <div className="l-tags">
-                    {l.tags.map((t: string) => <span key={t} className="pill pill-ticker">{t}</span>)}
-                    {l.pop && <span className="pill" style={{ background: 'color-mix(in oklch, var(--warn) 25%, transparent)', color: 'oklch(0.40 0.14 78)' }}>★ Popular</span>}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="ob-bar">
