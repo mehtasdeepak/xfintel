@@ -162,41 +162,41 @@ export default function SignalFeedPage() {
       </header>
 
       <main className="flex-1 md:ml-[220px]" style={{ paddingTop: 56, minWidth: 0 }}>
-        <div className="flex gap-8 px-6 py-8 max-w-[1100px] mx-auto">
+        {/* Page header — outside the two-column grid */}
+        <div className="px-6 pt-8 pb-4 max-w-[1100px] mx-auto flex flex-col gap-1">
+          <h1 className="type-display text-[1.5rem] md:text-[2.5rem]" style={{ color: "var(--ink)" }}>
+            Signal Feed
+          </h1>
+          <p className="type-body text-[0.875rem] md:text-[1rem]" style={{ color: "var(--ink-2)" }}>
+            Real-time accountability for financial influencers
+          </p>
+          {formattedTime && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="relative flex" style={{ width: 8, height: 8 }}>
+                <span
+                  className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
+                  style={{ backgroundColor: "var(--teal)" }}
+                />
+                <span
+                  className="relative inline-flex rounded-full"
+                  style={{ width: 8, height: 8, backgroundColor: "var(--teal)" }}
+                />
+              </span>
+              <p className="type-label" style={{ color: "var(--ink-2)" }}>
+                Last updated {formattedTime}
+              </p>
+            </div>
+          )}
+          <div className="flex items-center gap-2 mt-2">
+            <a href="/onboarding" style={{ fontSize: "12px", color: "var(--muted)", marginLeft: "auto" }}>
+              ✦ Customize Feed
+            </a>
+          </div>
+        </div>
+
+        <div className="flex gap-8 px-6 pb-8 max-w-[1100px] mx-auto">
 
           <div className="flex-1 min-w-0 max-w-[640px] flex flex-col gap-3 md:gap-6">
-            <div className="flex flex-col gap-1 pt-4 md:pt-0">
-              <h1 className="type-display text-[1.5rem] md:text-[2.5rem]" style={{ color: "var(--ink)" }}>
-                Signal Feed
-              </h1>
-              <p className="type-body text-[0.875rem] md:text-[1rem]" style={{ color: "var(--ink-2)" }}>
-                Real-time accountability for financial influencers
-              </p>
-              {formattedTime && (
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="relative flex" style={{ width: 8, height: 8 }}>
-                    <span
-                      className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
-                      style={{ backgroundColor: "var(--teal)" }}
-                    />
-                    <span
-                      className="relative inline-flex rounded-full"
-                      style={{ width: 8, height: 8, backgroundColor: "var(--teal)" }}
-                    />
-                  </span>
-                  <p className="type-label" style={{ color: "var(--ink-2)" }}>
-                    Last updated {formattedTime}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <a href="/onboarding" style={{ fontSize: "12px", color: "var(--muted)", marginLeft: "auto" }}>
-                ✦ Customize Feed
-              </a>
-            </div>
-
             <div
               className="flex gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
               style={{
@@ -286,7 +286,7 @@ export default function SignalFeedPage() {
           </div>
 
           <div className="hidden xl:block flex-shrink-0" style={{ width: 300 }}>
-            <div className="sticky" style={{ top: 56 + 32 }}>
+            <div className="sticky" style={{ top: 80 }}>
               <RightPanel />
             </div>
           </div>
