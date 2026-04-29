@@ -7,8 +7,6 @@ import {
   Trophy,
   TrendingUp,
   PieChart,
-  Settings,
-  LifeBuoy,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -113,39 +111,6 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
           </button>
         </div>
 
-        {/* Utility links */}
-        <div className="flex flex-col gap-0.5">
-          <Link
-            href="/settings"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors"
-            style={{ color: "var(--ink-2)" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor =
-                "color-mix(in oklch, var(--teal) 6%, transparent)")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")
-            }
-          >
-            <Settings size={16} strokeWidth={1.8} />
-            Settings
-          </Link>
-          <Link
-            href="/support"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-colors"
-            style={{ color: "var(--ink-2)" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor =
-                "color-mix(in oklch, var(--teal) 6%, transparent)")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.backgroundColor = "transparent")
-            }
-          >
-            <LifeBuoy size={16} strokeWidth={1.8} />
-            Support
-          </Link>
-        </div>
       </div>
     </div>
   );
