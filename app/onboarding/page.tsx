@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { createClient } from "@/lib/supabase-browser";
 
 const APP_CSS = `
 :root{
@@ -183,7 +184,16 @@ export default function OnboardingPage() {
       if (i >= 4) {
         clearInterval(tick);
         try { localStorage.setItem('xfintel.onboarded', '1'); localStorage.setItem('xfintel.picked', JSON.stringify([...picked])); } catch (e) {}
-        setTimeout(() => { window.location.href = '/feed'; }, 500);
+        const supabase = createClient();
+        supabase.auth.getUser().then(({ data }) => {
+          if (data.user) {
+            supabase.from('user_profiles').upsert({ user_id: data.user.id }).then(() => {
+              window.location.href = '/feed';
+            });
+          } else {
+            window.location.href = '/feed';
+          }
+        });
       } else {
         setStep(i);
       }
