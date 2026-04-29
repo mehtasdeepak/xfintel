@@ -106,6 +106,11 @@ export default function SignalFeedPage() {
     ? lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : null;
 
+  const countByCategory = posts.reduce((acc, p) => {
+    acc[p.category] = (acc[p.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
     <div className="flex min-h-screen" style={{ backgroundColor: "var(--bg-2)" }}>
       <Sidebar />
@@ -163,11 +168,20 @@ export default function SignalFeedPage() {
 
       <main className="flex-1 md:ml-[220px]" style={{ paddingTop: 56, minWidth: 0 }}>
         {/* Page header — outside the two-column grid */}
-        <div className="px-6 pt-8 pb-4 max-w-[1100px] mx-auto flex flex-col gap-1">
-          <h1 className="type-display text-[1.5rem] md:text-[2.5rem]" style={{ color: "var(--ink)" }}>
+        <div className="px-6 pt-8 pb-4 max-w-[1100px] mx-auto flex flex-col">
+          <p style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: "11px",
+            color: "var(--teal)",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase" as const,
+            fontWeight: 500,
+            marginBottom: 8,
+          }}>Real-time accountability</p>
+          <h1 style={{ fontSize: "34px", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--ink)", margin: "0 0 8px" }}>
             Signal Feed
           </h1>
-          <p className="type-body text-[0.875rem] md:text-[1rem]" style={{ color: "var(--ink-2)" }}>
+          <p style={{ fontSize: "14px", color: "var(--ink-2)", lineHeight: 1.55 }}>
             Real-time accountability for financial influencers
           </p>
           {formattedTime && (
@@ -182,8 +196,8 @@ export default function SignalFeedPage() {
                   style={{ width: 8, height: 8, backgroundColor: "var(--teal)" }}
                 />
               </span>
-              <p className="type-label" style={{ color: "var(--ink-2)" }}>
-                Last updated {formattedTime}
+              <p className="type-label" style={{ color: "var(--up)" }}>
+                {`LIVE · LAST UPDATED ${formattedTime}`}
               </p>
             </div>
           )}
@@ -213,17 +227,20 @@ export default function SignalFeedPage() {
                   <button
                     key={value}
                     onClick={() => handleFilterChange(value)}
-                    className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                    className="transition-colors"
                     style={{
+                      padding: "8px 14px",
+                      borderRadius: "999px",
+                      fontSize: "13px",
                       backgroundColor: isActive ? "var(--teal)" : "var(--card)",
-                      color: isActive ? "#ffffff" : "var(--ink-2)",
-                      border: isActive ? "1px solid var(--teal)" : "1px solid var(--line)",
+                      color: isActive ? "#fff" : "var(--ink-2)",
+                      border: isActive ? "1px solid var(--teal)" : "1px solid var(--line-2)",
                       whiteSpace: "nowrap",
                       flexShrink: 0,
                     }}
                     onMouseEnter={(e) => {
                       if (!isActive)
-                        (e.currentTarget as HTMLElement).style.backgroundColor = "var(--teal-soft)";
+                        (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg-2)";
                     }}
                     onMouseLeave={(e) => {
                       if (!isActive)
@@ -231,6 +248,14 @@ export default function SignalFeedPage() {
                     }}
                   >
                     {label}
+                    <span style={{
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: "11px",
+                      opacity: isActive ? 0.85 : 0.7,
+                      marginLeft: 4,
+                    }}>
+                      {value === "all" ? posts.length : (countByCategory[value] || 0)}
+                    </span>
                   </button>
                 );
               })}
