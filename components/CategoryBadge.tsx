@@ -8,26 +8,35 @@ type Category =
   | "analysis"
   | "noise";
 
-const CONFIG: Record<Category, { label: string; bg: string; color: string }> = {
-  trade_call:      { label: "Trade Call 🎯",      bg: "#006859", color: "#ffffff" },
-  position_update: { label: "Position Update 🔄", bg: "#1a56db", color: "#ffffff" },
-  exit:            { label: "Exit 🚪",            bg: "#b45309", color: "#ffffff" },
-  performance:     { label: "Performance 📈",     bg: "#7c3aed", color: "#ffffff" },
-  portfolio:       { label: "Portfolio 🗂️",       bg: "#0891b2", color: "#ffffff" },
-  watchlist:       { label: "Watchlist 👀",       bg: "#d97706", color: "#ffffff" },
-  analysis:        { label: "Analysis 📊",        bg: "#3d4946", color: "#ffffff" },
-  noise:           { label: "Noise 🔇",           bg: "#e0ebe6", color: "#171d1b" },
+const CONFIG: Record<Category, { label: string; icon: string; bg: string; color: string }> = {
+  trade_call:      { label: "TRADE CALL",      icon: "⚡", bg: "#fef3c7", color: "#92400e" },
+  position_update: { label: "POSITION UPDATE", icon: "◆", bg: "#dbeafe", color: "#1e40af" },
+  exit:            { label: "EXIT",            icon: "⊗", bg: "#fce7f3", color: "#9d174d" },
+  performance:     { label: "PERFORMANCE",     icon: "▲", bg: "#ede9fe", color: "#5b21b6" },
+  portfolio:       { label: "PORTFOLIO",       icon: "◈", bg: "#e0f2fe", color: "#075985" },
+  watchlist:       { label: "WATCHLIST",       icon: "☆", bg: "#fed7aa", color: "#9a3412" },
+  analysis:        { label: "ANALYSIS",        icon: "⊙", bg: "#ecfeff", color: "#0e7490" },
+  noise:           { label: "NOISE",           icon: "⊘", bg: "#f1f5f9", color: "#64748b" },
 };
 
 export default function CategoryBadge({ category }: { category: Category }) {
-  const { label, bg, color } = CONFIG[category] ?? CONFIG.noise;
+  const { label, icon, bg, color } = CONFIG[category] ?? CONFIG.noise;
 
   return (
     <span
-      className="type-label inline-flex items-center px-2.5 py-1 rounded-full whitespace-nowrap"
-      style={{ backgroundColor: bg, color }}
+      className="inline-flex items-center gap-1.5 whitespace-nowrap"
+      style={{
+        backgroundColor: bg,
+        color,
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: "10.5px",
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        borderRadius: 6,
+        padding: "4px 10px",
+      }}
     >
-      {label}
+      {icon} {label}
     </span>
   );
 }

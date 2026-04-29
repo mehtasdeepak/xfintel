@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import CategoryBadge from "@/components/CategoryBadge";
-import SentimentBadge from "@/components/SentimentBadge";
 
-const CATEGORY_BORDER: Record<string, string> = {
-  trade_call:      "#006859",
-  analysis:        "#3d4946",
-  performance:     "#7c3aed",
-  watchlist:       "#d97706",
-  portfolio:       "#0891b2",
-  position_update: "#1a56db",
-  exit:            "#b45309",
-};
+const AVATAR_GRADIENTS = [
+  "linear-gradient(135deg, var(--teal), #2563eb)",
+  "linear-gradient(135deg, #fbbf24, #d97706)",
+  "linear-gradient(135deg, #60a5fa, #2563eb)",
+  "linear-gradient(135deg, #34d399, #059669)",
+  "linear-gradient(135deg, #f472b6, #be185d)",
+  "linear-gradient(135deg, #a78bfa, #6d28d9)",
+  "linear-gradient(135deg, #fb923c, #c2410c)",
+];
+
+function avatarGradient(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return AVATAR_GRADIENTS[Math.abs(h) % AVATAR_GRADIENTS.length];
+}
 
 export type Post = {
   id: string;
@@ -49,29 +54,56 @@ function Avatar({ src, name }: { src: string | null; name: string }) {
     .join("")
     .toUpperCase();
 
-  return (
-    <div className="relative flex-shrink-0 w-10 h-10 md:w-12 md:h-12">
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={name}
-          className="rounded-full object-cover w-10 h-10 md:w-12 md:h-12"
-        />
-      ) : (
-        <div
-          className="rounded-full flex items-center justify-center text-sm font-semibold text-white w-10 h-10 md:w-12 md:h-12"
-          style={{ backgroundColor: "#006859" }}
-        >
-          {initials}
-        </div>
-      )}
-      {/* Verified-style green dot */}
-      <span
-        className="absolute bottom-0 right-0 rounded-full border-2 border-white"
-        style={{ width: 10, height: 10, backgroundColor: "#006859" }}
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={name}
+        className="rounded-full object-cover flex-shrink-0"
+        style={{ width: 40, height: 40 }}
       />
+    );
+  }
+
+  return (
+    <div
+      className="rounded-full flex items-center justify-center flex-shrink-0"
+      style={{
+        width: 40,
+        height: 40,
+        background: avatarGradient(name),
+        color: "#fff",
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 13,
+        fontWeight: 700,
+      }}
+    >
+      {initials}
     </div>
+  );
+}
+
+function SentimentTag({ sentiment }: { sentiment: string }) {
+  const map: Record<string, { icon: string; color: string }> = {
+    bullish: { icon: "▲", color: "var(--up)" },
+    bearish: { icon: "▼", color: "var(--down)" },
+    neutral: { icon: "—", color: "var(--muted)" },
+  };
+  const { icon, color } = map[sentiment] ?? map.neutral;
+  return (
+    <span
+      className="inline-flex items-center whitespace-nowrap"
+      style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 11,
+        fontWeight: 600,
+        color,
+        gap: 4,
+      }}
+    >
+      {icon} {sentiment.toUpperCase()}
+    </span>
   );
 }
 
@@ -84,104 +116,115 @@ export default function PostCard({ post }: { post: Post }) {
   const username = handle.replace(/^@/, "");
   const xUrl = `https://x.com/${username}/status/${post.x_post_id}`;
   const confidence = post.confidence != null ? Math.round(post.confidence * 100) : null;
-  const borderColor = CATEGORY_BORDER[post.category] ?? "#e0ebe6";
+
+  const sentimentBorderColor =
+    post.sentiment === "bullish" ? "var(--up)" :
+    post.sentiment === "bearish" ? "var(--down)" :
+    "var(--muted)";
 
   return (
     <article
-      // Desktop: left colored border via CSS custom property.
-      // Mobile: no border — clean ambient shadow only.
-      className="flex flex-col gap-3 p-4 md:p-6 rounded-2xl md:[border-left:4px_solid_var(--cat-border)]"
+      className="flex flex-col gap-4"
       style={{
-        backgroundColor: "#ffffff",
-        boxShadow: "0px 12px 32px rgba(23, 29, 27, 0.06)",
-        "--cat-border": borderColor,
-      } as React.CSSProperties}
+        backgroundColor: "var(--card)",
+        border: "1px solid var(--line)",
+        borderLeft: `3px solid ${sentimentBorderColor}`,
+        borderRadius: 14,
+        padding: "20px 22px",
+        transition: "box-shadow .2s ease",
+      }}
+      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.boxShadow = "var(--shadow-md)")}
+      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.boxShadow = "none")}
     >
-      {/* Row 1: Avatar + name + handle + time */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <Avatar src={profileImage} name={displayName} />
-          <div className="min-w-0">
-            <p
-              className="text-xs md:text-sm font-semibold truncate"
-              style={{ color: "#171d1b" }}
-            >
-              {displayName}
-            </p>
-            <p
-              className="text-[10px] md:text-[11px] truncate"
-              style={{ color: "#3d4946", opacity: 0.75 }}
-            >
-              {handle}
-            </p>
-          </div>
+      {/* Header: avatar + name/handle + timestamp */}
+      <div className="flex items-center" style={{ gap: 12 }}>
+        <Avatar src={profileImage} name={displayName} />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold truncate" style={{ fontSize: 14.5, color: "var(--ink)" }}>
+            {displayName}
+          </p>
+          <p
+            className="truncate"
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11.5,
+              color: "var(--muted)",
+              marginTop: 2,
+            }}
+          >
+            {handle}
+          </p>
         </div>
-        <p className="text-xs flex-shrink-0" style={{ color: "#3d4946" }}>
+        <p
+          className="flex-shrink-0"
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11.5,
+            color: "var(--muted)",
+          }}
+        >
           {timeAgo(post.posted_at)}
         </p>
       </div>
 
-      {/* Row 2: Category badge + tickers (mobile); + sentiment badge (desktop) */}
-      <div
-        className="flex items-center gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
-        style={{
-          overflowX: "auto",
-          WebkitOverflowScrolling: "touch",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          paddingBottom: 2,
-        }}
-      >
+      {/* Tags: category pill + sentiment + ticker chips */}
+      <div className="flex items-center flex-wrap" style={{ gap: 6, marginBottom: "2px" }}>
         <CategoryBadge category={post.category as Parameters<typeof CategoryBadge>[0]["category"]} />
-        {/* Sentiment badge — hidden on mobile to keep row compact */}
-        {post.sentiment && (
-          <span className="hidden md:block flex-shrink-0">
-            <SentimentBadge sentiment={post.sentiment as Parameters<typeof SentimentBadge>[0]["sentiment"]} />
-          </span>
-        )}
+        {post.sentiment && <SentimentTag sentiment={post.sentiment} />}
         {post.ticker_symbols?.map((ticker) => (
           <span
             key={ticker}
-            className="text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0"
-            style={{ backgroundColor: "#e0ebe6", color: "#171d1b", whiteSpace: "nowrap" }}
+            className="whitespace-nowrap"
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11.5,
+              fontWeight: 600,
+              color: "var(--teal)",
+              backgroundColor: "var(--teal-soft)",
+              padding: "3px 8px",
+              borderRadius: 6,
+            }}
           >
             ${ticker}
           </span>
         ))}
       </div>
 
-      {/* Row 3: Post content — 3 lines on mobile, 4 on desktop */}
+      {/* Body */}
       <div>
         <p
-          className={`text-sm leading-relaxed whitespace-pre-wrap${!expanded ? " line-clamp-3 md:line-clamp-4" : ""}`}
-          style={{ color: "#171d1b" }}
+          className={`whitespace-pre-wrap${!expanded ? " line-clamp-4" : ""}`}
+          style={{ fontSize: "14px", lineHeight: 1.6, color: "var(--ink)" }}
         >
           {post.content}
         </p>
         <button
           onClick={() => setExpanded((v) => !v)}
           className="mt-1 text-xs font-medium"
-          style={{ color: "#006859" }}
+          style={{ color: "var(--teal)" }}
         >
           {expanded ? "Show less" : "Read more"}
         </button>
       </div>
 
-      {/* Row 4: Confidence left, View on X right */}
-      {/* Mobile: both gray. Desktop: View on X green with hover. */}
-      <div className="flex items-center justify-between pt-1">
-        <div>
+      {/* Footer: confidence + View on X */}
+      <div
+        className="flex items-center justify-between"
+        style={{ fontSize: 12.5, color: "var(--muted)" }}
+      >
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5 }}>
           {confidence != null && (
-            <p className="text-[0.75rem] md:text-xs" style={{ color: "#3d4946" }}>
-              {confidence}% confident
-            </p>
+            <>
+              <span style={{ color: "var(--ink)", fontWeight: 600 }}>{confidence}%</span>
+              {" AI confidence"}
+            </>
           )}
-        </div>
+        </span>
         <a
           href={xUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[0.75rem] md:text-xs font-medium transition-colors text-[#3d4946] md:text-[#006859] md:hover:text-[#004d42]"
+          style={{ color: "var(--teal)", fontWeight: 500 }}
         >
           View on X ↗
         </a>
