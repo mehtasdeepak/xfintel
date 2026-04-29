@@ -43,7 +43,7 @@ export default function SignalFeedPage() {
         .eq('user_id', user.id)
         .single()
         .then(({ data }) => {
-          if (data?.picked_influencer_ids?.length > 0) {
+          if (data?.picked_influencer_ids && data.picked_influencer_ids.length > 0) {
             setPickedIds(data.picked_influencer_ids);
           }
         });
