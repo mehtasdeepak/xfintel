@@ -26,6 +26,8 @@ type ClaudeResult = {
   ticker: string | null;
   sentiment: "bullish" | "bearish" | "neutral";
   confidence: number;
+  entry_price: number | null;
+  target_price: number | null;
 };
 
 function buildPrompt(content: string): string {
@@ -45,6 +47,8 @@ Also identify:
 - ticker: The primary stock/crypto ticker mentioned (e.g. NVDA, TSLA, BTC) or null if none
 - sentiment: bullish, bearish, or neutral
 - confidence: A score from 0.0 to 1.0 of how confident you are in this categorization
+- entry_price: The stock price the influencer is buying/entering at. Look for phrases like "bought at $X", "entering at $X", "buying at $X", "added at $X". "PT $X" is NOT entry price. Return null if no explicit entry price is mentioned.
+- target_price: The price target mentioned. Look for "PT $X", "target $X", "price target $X", "TP: $X", "target: $X", "$X target". Only meaningful for trade_call posts. Return null otherwise.
 
 Post: ${content}
 
@@ -53,7 +57,9 @@ Respond with ONLY a valid JSON object in this exact format, nothing else:
   "category": "category_name",
   "ticker": "TICKER_OR_NULL",
   "sentiment": "bullish/bearish/neutral",
-  "confidence": 0.00
+  "confidence": 0.00,
+  "entry_price": null,
+  "target_price": null
 }`;
 }
 
@@ -62,7 +68,7 @@ async function classifyPost(content: string, apiKey: string): Promise<ClaudeResu
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: buildPrompt(content) }],
-    max_tokens: 200,
+    max_tokens: 250,
   });
   const raw = completion.choices[0].message.content ?? "";
   const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
@@ -74,6 +80,8 @@ async function classifyPost(content: string, apiKey: string): Promise<ClaudeResu
   } else {
     parsed.ticker = parsed.ticker.toUpperCase();
   }
+  parsed.entry_price = parsed.entry_price ?? null;
+  parsed.target_price = parsed.target_price ?? null;
 
   return parsed;
 }
@@ -143,6 +151,8 @@ async function handler(req: NextRequest) {
         sentiment: result.sentiment,
         confidence: result.confidence,
         ticker_symbols: mergedTickers,
+        entry_price: result.entry_price ?? null,
+        target_price: result.target_price ?? null,
       })
       .eq("id", post.id);
 
