@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+type TopGainer = {
+  ticker: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  mentions: number;
+};
+
 type TrendingTicker = {
   ticker: string;
   mentions: number;
@@ -43,14 +51,21 @@ function SkeletonRow() {
 export default function RightPanel() {
   const [tickers, setTickers] = useState<TrendingTicker[]>([]);
   const [topInfluencer, setTopInfluencer] = useState<TopInfluencer | null>(null);
+  const [gainers, setGainers] = useState<TopGainer[]>([]);
   const [loadingTickers, setLoadingTickers] = useState(true);
   const [loadingInfluencer, setLoadingInfluencer] = useState(true);
+  const [loadingGainers, setLoadingGainers] = useState(true);
 
   useEffect(() => {
     fetch("/api/trending-tickers")
       .then((r) => r.json())
       .then((d) => setTickers(d.tickers ?? []))
       .finally(() => setLoadingTickers(false));
+
+    fetch("/api/top-gainers")
+      .then((r) => r.json())
+      .then((d) => setGainers(d.gainers ?? []))
+      .finally(() => setLoadingGainers(false));
 
     fetch("/api/top-influencer")
       .then((r) => r.json())
@@ -127,9 +142,53 @@ export default function RightPanel() {
       </div>
 
       {/* Divider */}
-      <div style={{ height: 1, backgroundColor: "#eff5f2" }} />
+      <div style={{ height: 1, backgroundColor: "var(--line)" }} />
 
-      {/* Section 2 — Weekly Top Influencer */}
+      {/* Section 2 — Top FinX Stock Gainers */}
+      <div className="p-5">
+        <SectionLabel>Top FinX Stock Gainers</SectionLabel>
+
+        {loadingGainers ? (
+          <div className="flex flex-col">
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}
+          </div>
+        ) : gainers.length === 0 ? (
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            No gainer data yet.
+          </p>
+        ) : (
+          <div className="flex flex-col">
+            {gainers.map((g, idx) => (
+              <div key={g.ticker} className="flex items-center gap-3 py-2.5"
+                style={{ borderBottom: idx < gainers.length - 1 ? "1px solid var(--line)" : "none" }}>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace",
+                  fontSize: "11px", color: "var(--muted)", width: 20, flexShrink: 0 }}>
+                  {String(idx + 1).padStart(2, "0")}
+                </span>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace",
+                  fontSize: "12px", fontWeight: 600, color: "var(--teal)",
+                  backgroundColor: "var(--teal-soft)", padding: "2px 8px",
+                  borderRadius: 6, flexShrink: 0 }}>
+                  ${g.ticker}
+                </span>
+                <span style={{ flex: 1, fontSize: "11.5px", color: "var(--muted)" }}>
+                  ${g.price.toFixed(2)}
+                </span>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace",
+                  fontSize: "12px", fontWeight: 600, flexShrink: 0,
+                  color: "var(--up)" }}>
+                  +{g.changePercent.toFixed(2)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: 1, backgroundColor: "var(--line)" }} />
+
+      {/* Section 3 — Weekly Top Influencer */}
       <div className="p-5">
         <SectionLabel>Weekly Top Influencer</SectionLabel>
 
