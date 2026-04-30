@@ -7,6 +7,23 @@ import PostCard, { type Post } from "@/components/PostCard";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+type TradeTracker = {
+  id: string;
+  ticker: string | null;
+  entry_price: number | null;
+  current_price: number | null;
+  target_price: number | null;
+  tracker_status: string | null;
+  posted_at: string;
+  content: string;
+  x_post_id: string;
+  influencer: {
+    display_name: string;
+    x_handle: string;
+    profile_image_url: string | null;
+  } | null;
+};
+
 type InfluencerAvatar = {
   x_handle: string;
   display_name: string;
@@ -425,6 +442,9 @@ export default function PortfolioPage() {
   const [data, setData] = useState<PortfolioData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [trackerPosts, setTrackerPosts] = useState<TradeTracker[]>([]);
+  const [trackerTab, setTrackerTab] = useState<string>("in_progress");
+  const [trackerLoading, setTrackerLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/portfolio")
@@ -435,6 +455,11 @@ export default function PortfolioPage() {
       .then(setData)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+
+    fetch("/api/trade-tracker")
+      .then((r) => r.json())
+      .then((d) => setTrackerPosts(d.posts ?? []))
+      .finally(() => setTrackerLoading(false));
   }, []);
 
   const stats = data?.stats;
@@ -467,6 +492,264 @@ export default function PortfolioPage() {
             <p style={{ fontSize: "14px", color: "var(--ink-2)", lineHeight: 1.55 }}>
               Explicit positions and moves from 35 tracked financial influencers on X
             </p>
+          </div>
+
+          {/* Performance Tracker */}
+          <div style={{marginBottom:40}}>
+
+            {/* Section header */}
+            <div style={{marginBottom:16}}>
+              <p style={{fontFamily:"'JetBrains Mono',monospace",
+                fontSize:"11px",color:"var(--teal)",
+                letterSpacing:"0.12em",textTransform:"uppercase" as const,
+                fontWeight:500,marginBottom:4}}>
+                AI Signal Tracker
+              </p>
+              <h2 style={{fontSize:"22px",fontWeight:600,
+                color:"var(--ink)",letterSpacing:"-0.02em",
+                margin:"0 0 4px"}}>
+                Trade Call Performance
+              </h2>
+              <p style={{fontSize:"14px",color:"var(--ink-2)",margin:0}}>
+                Tracking price movement on trade calls from FinX leaders
+              </p>
+            </div>
+
+            {/* Status tabs */}
+            <div style={{display:"flex",borderBottom:"1px solid var(--line)",marginBottom:0}}>
+              {[
+                {label:"In Progress", value:"in_progress"},
+                {label:"Hit Target",  value:"hit_target"},
+                {label:"Invalidated", value:"invalidated"},
+                {label:"No Target",   value:"no_target"},
+              ].map(tab => {
+                const count = trackerPosts.filter(p =>
+                  (p.tracker_status ?? "no_target") === tab.value).length;
+                const isActive = trackerTab === tab.value;
+                return (
+                  <button key={tab.value}
+                    onClick={() => setTrackerTab(tab.value)}
+                    style={{padding:"10px 16px",border:"none",
+                      borderBottom: isActive
+                        ? "2px solid var(--teal)"
+                        : "2px solid transparent",
+                      backgroundColor:"transparent",cursor:"pointer",
+                      fontSize:"13px",fontWeight: isActive ? 600 : 400,
+                      color: isActive ? "var(--teal)" : "var(--muted)",
+                      marginBottom:-1,whiteSpace:"nowrap"}}>
+                    {tab.label}
+                    <span style={{marginLeft:6,fontSize:"11px",
+                      fontFamily:"'JetBrains Mono',monospace",
+                      opacity:0.7}}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Table */}
+            <div style={{backgroundColor:"var(--card)",
+              border:"1px solid var(--line)",
+              borderTop:"none",borderRadius:"0 0 14px 14px",
+              overflow:"hidden"}}>
+
+              {/* Table header */}
+              <div style={{display:"grid",
+                gridTemplateColumns:"90px 170px 90px 90px 90px 80px 140px 100px",
+                padding:"10px 16px",
+                backgroundColor:"var(--bg-2)",
+                borderBottom:"1px solid var(--line)"}}>
+                {["DATE","INFLUENCER","TICKER","ENTRY","NOW","MOVE","PROGRESS","STATUS"].map(col => (
+                  <span key={col} style={{
+                    fontFamily:"'JetBrains Mono',monospace",
+                    fontSize:"10px",letterSpacing:"0.1em",
+                    color:"var(--muted)",fontWeight:500}}>
+                    {col}
+                  </span>
+                ))}
+              </div>
+
+              {/* Rows */}
+              {trackerLoading ? (
+                <div style={{padding:"32px 16px",textAlign:"center",
+                  color:"var(--muted)",fontSize:"13px"}}>
+                  Loading...
+                </div>
+              ) : trackerPosts.filter(p =>
+                  (p.tracker_status ?? "no_target") === trackerTab
+                ).length === 0 ? (
+                <div style={{padding:"40px 16px",textAlign:"center",
+                  color:"var(--muted)",fontSize:"14px"}}>
+                  No {trackerTab.replace(/_/g," ")} trade calls yet.
+                </div>
+              ) : (
+                trackerPosts
+                  .filter(p => (p.tracker_status ?? "no_target") === trackerTab)
+                  .map((post, idx, arr) => {
+                    const handle = post.influencer?.x_handle ?? "";
+                    const username = handle.replace(/^@/, "");
+                    const tweetUrl = `https://x.com/${username}/status/${post.x_post_id}`;
+                    const initials = (post.influencer?.display_name ?? "?")
+                      .split(" ").map((w: string) => w[0])
+                      .slice(0, 2).join("").toUpperCase();
+                    const GRAD = [
+                      "linear-gradient(135deg,#fbbf24,#d97706)",
+                      "linear-gradient(135deg,#60a5fa,#2563eb)",
+                      "linear-gradient(135deg,#34d399,#059669)",
+                      "linear-gradient(135deg,#f472b6,#be185d)",
+                      "linear-gradient(135deg,#a78bfa,#6d28d9)",
+                      "linear-gradient(135deg,#fb923c,#c2410c)",
+                    ];
+                    const grad = GRAD[(initials.charCodeAt(0) ?? 0) % 6];
+                    const entry = post.entry_price;
+                    const current = post.current_price;
+                    const target = post.target_price;
+                    const move = entry && current
+                      ? ((current - entry) / entry * 100) : null;
+                    const progress = entry && target && current && target !== entry
+                      ? Math.min(100, Math.max(0,
+                          ((current - entry) / (target - entry)) * 100))
+                      : null;
+                    const statusConfig: Record<string, {label:string,bg:string,color:string}> = {
+                      in_progress: {label:"IN PROGRESS",
+                        bg:"color-mix(in oklch,#fbbf24 20%,transparent)",
+                        color:"#92400e"},
+                      hit_target:  {label:"HIT TARGET",
+                        bg:"color-mix(in oklch,var(--up) 15%,transparent)",
+                        color:"var(--teal)"},
+                      invalidated: {label:"INVALIDATED",
+                        bg:"color-mix(in oklch,var(--down) 12%,transparent)",
+                        color:"var(--down)"},
+                      no_target:   {label:"NO TARGET",
+                        bg:"var(--bg-3)",color:"var(--muted)"},
+                    };
+                    const sc = statusConfig[post.tracker_status ?? "no_target"] ?? statusConfig.no_target;
+
+                    return (
+                      <div key={post.id}
+                        style={{display:"grid",
+                          gridTemplateColumns:"90px 170px 90px 90px 90px 80px 140px 100px",
+                          padding:"13px 16px",alignItems:"center",
+                          borderBottom: idx < arr.length-1
+                            ? "1px solid var(--line)" : "none",
+                          transition:"background 0.1s",cursor:"pointer"}}
+                        onClick={() => window.open(tweetUrl,"_blank")}
+                        onMouseEnter={e =>
+                          (e.currentTarget as HTMLElement).style.backgroundColor="var(--bg-2)"}
+                        onMouseLeave={e =>
+                          (e.currentTarget as HTMLElement).style.backgroundColor="transparent"}>
+
+                        {/* Date */}
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",
+                          fontSize:"11.5px",color:"var(--muted)"}}>
+                          {new Date(post.posted_at).toLocaleDateString("en-US",
+                            {month:"short",day:"numeric"})}
+                        </span>
+
+                        {/* Influencer */}
+                        <div style={{display:"flex",alignItems:"center",gap:8}}>
+                          {post.influencer?.profile_image_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={post.influencer.profile_image_url}
+                              style={{width:26,height:26,borderRadius:"50%",
+                                objectFit:"cover",flexShrink:0}} alt=""/>
+                          ) : (
+                            <div style={{width:26,height:26,borderRadius:"50%",
+                              background:grad,display:"flex",alignItems:"center",
+                              justifyContent:"center",fontSize:"10px",
+                              fontWeight:600,color:"#fff",flexShrink:0}}>
+                              {initials}
+                            </div>
+                          )}
+                          <div style={{minWidth:0}}>
+                            <p style={{fontSize:"12px",fontWeight:600,
+                              color:"var(--ink)",margin:0,
+                              whiteSpace:"nowrap",overflow:"hidden",
+                              textOverflow:"ellipsis"}}>
+                              {post.influencer?.display_name ?? username}
+                            </p>
+                            <p style={{fontSize:"10px",color:"var(--muted)",
+                              margin:0,fontFamily:"'JetBrains Mono',monospace"}}>
+                              {handle}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Ticker */}
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",
+                          fontSize:"12px",fontWeight:600,color:"var(--teal)",
+                          backgroundColor:"var(--teal-soft)",
+                          padding:"3px 8px",borderRadius:6,
+                          display:"inline-block"}}>
+                          {post.ticker ? `$${post.ticker}` : "—"}
+                        </span>
+
+                        {/* Entry */}
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",
+                          fontSize:"12px",color:"var(--ink-2)"}}>
+                          {entry ? `$${entry.toFixed(2)}` : "—"}
+                        </span>
+
+                        {/* Current */}
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",
+                          fontSize:"12px",fontWeight:600,
+                          color: current && entry
+                            ? (current >= entry ? "var(--up)" : "var(--down)")
+                            : "var(--muted)"}}>
+                          {current ? `$${current.toFixed(2)}` : "—"}
+                        </span>
+
+                        {/* Move */}
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",
+                          fontSize:"12px",fontWeight:600,
+                          color: move === null ? "var(--muted)"
+                            : move >= 0 ? "var(--up)" : "var(--down)"}}>
+                          {move === null ? "—"
+                            : `${move >= 0 ? "+" : ""}${move.toFixed(2)}%`}
+                        </span>
+
+                        {/* Progress bar */}
+                        <div style={{paddingRight:8}}>
+                          {progress !== null ? (
+                            <div>
+                              <div style={{height:6,borderRadius:3,
+                                backgroundColor:"var(--line)",
+                                overflow:"hidden",marginBottom:3}}>
+                                <div style={{height:"100%",borderRadius:3,
+                                  width:`${progress}%`,
+                                  backgroundColor: progress >= 100
+                                    ? "var(--up)"
+                                    : move !== null && move < 0
+                                    ? "var(--down)"
+                                    : "var(--teal)",
+                                  transition:"width 0.3s"}}/>
+                              </div>
+                              <span style={{fontSize:"10px",
+                                fontFamily:"'JetBrains Mono',monospace",
+                                color:"var(--muted)"}}>
+                                {progress.toFixed(0)}% to target
+                              </span>
+                            </div>
+                          ) : (
+                            <span style={{fontSize:"11px",color:"var(--muted)"}}>
+                              No target
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Status */}
+                        <span style={{fontSize:"10px",fontWeight:700,
+                          fontFamily:"'JetBrains Mono',monospace",
+                          letterSpacing:"0.05em",
+                          padding:"4px 8px",borderRadius:6,
+                          backgroundColor:sc.bg,color:sc.color,
+                          display:"inline-block",whiteSpace:"nowrap"}}>
+                          {sc.label}
+                        </span>
+                      </div>
+                    );
+                  })
+              )}
+            </div>
           </div>
 
           {/* Stats row */}
