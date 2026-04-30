@@ -21,9 +21,14 @@ create table if not exists posts (
   category       text not null check (category in (
                    'trade_call', 'upside', 'downside', 'exit', 'portfolio', 'opinion'
                  )),
-  ticker_symbols text[] not null default '{}',
-  posted_at      timestamptz not null,
-  created_at     timestamptz not null default now()
+  ticker_symbols     text[] not null default '{}',
+  posted_at          timestamptz not null,
+  created_at         timestamptz not null default now(),
+  entry_price        numeric,
+  target_price       numeric,
+  current_price      numeric,
+  price_captured_at  timestamptz,
+  tracker_status     text
 );
 
 create index if not exists posts_influencer_id_idx  on posts (influencer_id);
