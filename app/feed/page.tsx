@@ -68,6 +68,7 @@ function SkeletonCard() {
 
 export default function SignalFeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -132,6 +133,9 @@ export default function SignalFeedPage() {
     setError(null);
     setOffset(0);
     fetchPosts(activeFilter, 0, false, pickedIds, viewMode === "table" ? timeRange : undefined).finally(() => setLoading(false));
+    fetch(`/api/feed?days=2`)
+      .then(r => r.json())
+      .then(d => setAllPosts(d.posts ?? []));
   }, [activeFilter, fetchPosts, pickedIds, viewMode, timeRange]);
 
   useEffect(() => {
@@ -164,7 +168,7 @@ export default function SignalFeedPage() {
     ? lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : null;
 
-  const countByCategory = posts.reduce((acc, p) => {
+  const countByCategory = allPosts.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
