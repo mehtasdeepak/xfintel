@@ -554,11 +554,11 @@ export default function PortfolioPage() {
 
               {/* Table header */}
               <div style={{display:"grid",
-                gridTemplateColumns:"90px 170px 90px 90px 90px 80px 140px 100px",
+                gridTemplateColumns:"90px 170px 90px 90px 90px 80px 90px 140px 100px",
                 padding:"10px 16px",
                 backgroundColor:"var(--bg-2)",
                 borderBottom:"1px solid var(--line)"}}>
-                {["DATE","INFLUENCER","TICKER","ENTRY","NOW","MOVE","PROGRESS","STATUS"].map(col => (
+                {["DATE","INFLUENCER","TICKER","ENTRY","NOW","MOVE","TARGET","PROGRESS","STATUS"].map(col => (
                   <span key={col} style={{
                     fontFamily:"'JetBrains Mono',monospace",
                     fontSize:"10px",letterSpacing:"0.1em",
@@ -627,7 +627,7 @@ export default function PortfolioPage() {
                     return (
                       <div key={post.id}
                         style={{display:"grid",
-                          gridTemplateColumns:"90px 170px 90px 90px 90px 80px 140px 100px",
+                          gridTemplateColumns:"90px 170px 90px 90px 90px 80px 90px 140px 100px",
                           padding:"13px 16px",alignItems:"center",
                           borderBottom: idx < arr.length-1
                             ? "1px solid var(--line)" : "none",
@@ -705,6 +705,12 @@ export default function PortfolioPage() {
                             : move >= 0 ? "var(--up)" : "var(--down)"}}>
                           {move === null ? "—"
                             : `${move >= 0 ? "+" : ""}${move.toFixed(2)}%`}
+                        </span>
+
+                        {/* Target */}
+                        <span style={{fontFamily:"'JetBrains Mono',monospace",
+                          fontSize:"12px",color:"var(--ink-2)"}}>
+                          {target ? `$${target.toFixed(2)}` : "—"}
                         </span>
 
                         {/* Progress bar */}
