@@ -69,6 +69,7 @@ function SkeletonCard() {
 export default function SignalFeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [allPostsForCount, setAllPostsForCount] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,6 +97,12 @@ export default function SignalFeedPage() {
           }
         });
     });
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/feed?limit=200')
+      .then(r => r.json())
+      .then(d => setAllPostsForCount(d.posts ?? []));
   }, []);
 
   useEffect(() => {
@@ -434,8 +441,8 @@ export default function SignalFeedPage() {
                 }}>
                   {TABLE_TABS.map((tab) => {
                     const count = tab.value === "all"
-                      ? posts.length
-                      : posts.filter((p) => p.category === tab.value).length;
+                      ? allPostsForCount.length
+                      : allPostsForCount.filter((p) => p.category === tab.value).length;
                     const isActive = tableTab === tab.value;
                     return (
                       <button
