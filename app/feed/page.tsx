@@ -330,6 +330,7 @@ export default function SignalFeedPage() {
             </div>
 
             {/* Filter chips */}
+            {viewMode === "card" && (
             <div
               className="flex gap-2 md:flex-wrap [&::-webkit-scrollbar]:hidden"
               style={{
@@ -379,6 +380,7 @@ export default function SignalFeedPage() {
                 );
               })}
             </div>
+            )}
 
             {/* Card view */}
             {viewMode === "card" && (
@@ -506,7 +508,7 @@ export default function SignalFeedPage() {
                   </div>
                 ) : (
                   <>
-                    {(tableTab === "all" ? posts : posts.filter((p) => p.category === tableTab))
+                    {(tableTab === "all" ? allPostsForCount : allPostsForCount.filter((p) => p.category === tableTab))
                       .map((post, idx, arr) => {
                         const handle = post.influencer?.x_handle ?? "";
                         const username = handle.replace(/^@/, "");
