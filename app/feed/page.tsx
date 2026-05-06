@@ -434,6 +434,8 @@ export default function SignalFeedPage() {
                 border: "1px solid var(--line)",
                 borderRadius: 14,
                 overflow: "hidden",
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
               }}>
                 {/* Tabs row */}
                 <div style={{
@@ -477,6 +479,7 @@ export default function SignalFeedPage() {
                   padding: "10px 16px",
                   backgroundColor: "var(--bg-2)",
                   borderBottom: "1px solid var(--line)",
+                  minWidth: "700px",
                 }}>
                   {["DATE", "INFLUENCER", "TICKER", "SENTIMENT", "SIGNAL", "ACTION"].map((col) => (
                     <span key={col} style={{

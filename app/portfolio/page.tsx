@@ -550,14 +550,17 @@ export default function PortfolioPage() {
             <div style={{backgroundColor:"var(--card)",
               border:"1px solid var(--line)",
               borderTop:"none",borderRadius:"0 0 14px 14px",
-              overflow:"hidden"}}>
+              overflow:"hidden",
+              overflowX:"auto",
+              WebkitOverflowScrolling:"touch"}}>
 
               {/* Table header */}
               <div style={{display:"grid",
                 gridTemplateColumns:"90px 170px 90px 90px 90px 80px 90px 140px 100px",
                 padding:"10px 16px",
                 backgroundColor:"var(--bg-2)",
-                borderBottom:"1px solid var(--line)"}}>
+                borderBottom:"1px solid var(--line)",
+                minWidth:"800px"}}>
                 {["DATE","INFLUENCER","TICKER","ENTRY","NOW","MOVE","TARGET","PROGRESS","STATUS"].map(col => (
                   <span key={col} style={{
                     fontFamily:"'JetBrains Mono',monospace",
@@ -631,7 +634,8 @@ export default function PortfolioPage() {
                           padding:"13px 16px",alignItems:"center",
                           borderBottom: idx < arr.length-1
                             ? "1px solid var(--line)" : "none",
-                          transition:"background 0.1s",cursor:"pointer"}}
+                          transition:"background 0.1s",cursor:"pointer",
+                          minWidth:"800px"}}
                         onClick={() => window.open(tweetUrl,"_blank")}
                         onMouseEnter={e =>
                           (e.currentTarget as HTMLElement).style.backgroundColor="var(--bg-2)"}
