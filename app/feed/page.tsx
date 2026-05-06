@@ -100,7 +100,7 @@ export default function SignalFeedPage() {
   }, []);
 
   useEffect(() => {
-    fetch(`/api/feed?limit=200${timeRange > 0 ? `&days=${timeRange}` : ''}`)
+    fetch(`/api/feed?limit=500&countOnly=true${timeRange > 0 ? `&days=${timeRange}` : ''}`)
       .then(r => r.json())
       .then(d => setAllPostsForCount(d.posts ?? []));
   }, [timeRange]);

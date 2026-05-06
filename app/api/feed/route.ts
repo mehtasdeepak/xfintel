@@ -7,8 +7,11 @@ const DEFAULT_LIMIT = 20;
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
 
+  const days = parseInt(searchParams.get("days") ?? "30");
   const category = searchParams.get("category") ?? null;
-  const limit = Math.min(parseInt(searchParams.get("limit") ?? String(DEFAULT_LIMIT), 10), 100);
+  const countOnly = searchParams.get("countOnly") === "true";
+  const maxLimit = countOnly ? 500 : 100;
+  const limit = Math.min(parseInt(searchParams.get("limit") ?? String(DEFAULT_LIMIT), 10), maxLimit);
   const offset = parseInt(searchParams.get("offset") ?? "0", 10);
   const influencerIds = searchParams.get("influencer_ids");
 
@@ -31,6 +34,11 @@ export async function GET(req: NextRequest) {
     `)
     .order("posted_at", { ascending: false })
     .range(offset, offset + limit - 1);
+
+  if (days > 0) {
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    query = query.gte("posted_at", since);
+  }
 
   if (influencerIds) {
     const ids = influencerIds.split(",").filter(Boolean);
