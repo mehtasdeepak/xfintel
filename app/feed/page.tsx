@@ -175,7 +175,7 @@ export default function SignalFeedPage() {
     ? lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : null;
 
-  const countByCategory = allPosts.reduce((acc, p) => {
+  const countByCategory = allPostsForCount.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -284,8 +284,7 @@ export default function SignalFeedPage() {
                 ✦ Customize Feed
               </a>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                {viewMode === "table" && (
-                  <select
+                <select
                     value={timeRange}
                     onChange={(e) => setTimeRange(Number(e.target.value))}
                     style={{
@@ -298,7 +297,6 @@ export default function SignalFeedPage() {
                     <option value={90}>Last 90 Days</option>
                     <option value={0}>All Time</option>
                   </select>
-                )}
                 <div style={{
                   display: "flex", gap: 4, padding: 4,
                   backgroundColor: "var(--card)", border: "1px solid var(--line)", borderRadius: 8,
