@@ -100,10 +100,10 @@ export default function SignalFeedPage() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/feed?limit=200')
+    fetch(`/api/feed?limit=200${timeRange > 0 ? `&days=${timeRange}` : ''}`)
       .then(r => r.json())
       .then(d => setAllPostsForCount(d.posts ?? []));
-  }, []);
+  }, [timeRange]);
 
   useEffect(() => {
     const saved = localStorage.getItem("xfintel.viewMode");
