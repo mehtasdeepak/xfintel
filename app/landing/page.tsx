@@ -240,6 +240,32 @@ const CSS = `
   .tweaks .chip:hover{border-color:var(--ink-2)}
   .tweaks .chip.active{background:var(--teal);border-color:var(--teal);color:var(--bg)}
   .x-italic{font-family:'Instrument Serif';font-style:italic;font-weight:400;padding-right:0.04em}
+  .mobile-pwa-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+  @media(max-width:980px){.mobile-pwa-inner{grid-template-columns:1fr;gap:48px}}
+  .pwa-steps{margin-top:32px;display:flex;flex-direction:column;gap:16px}
+  .pwa-step{display:flex;align-items:center;gap:16px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-size:15px;color:var(--ink)}
+  .pwa-num{width:32px;height:32px;border-radius:50%;background:var(--teal);color:var(--bg);display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;flex:0 0 auto}
+  .pwa-badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .pwa-badge{padding:8px 14px;border:1px solid var(--line-2);border-radius:999px;font-size:13px;color:var(--ink-2);background:var(--bg)}
+  .pwa-phone-wrap{display:flex;justify-content:center;align-items:center}
+  .pwa-phone{width:220px;height:420px;border:8px solid oklch(0.22 0.015 175);border-radius:38px;background:oklch(0.11 0.01 175);box-shadow:var(--shadow-lg),0 0 0 1px oklch(0.30 0.02 175);overflow:hidden;display:flex;flex-direction:column}
+  .pwa-status-bar{display:flex;justify-content:space-between;padding:10px 18px 6px;font-size:10px;color:oklch(0.65 0.01 175);font-family:'JetBrains Mono',monospace}
+  .pwa-icon-grid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+  .pwa-app-icon{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--teal),var(--teal-2));display:grid;place-items:center;color:oklch(0.98 0.005 95);font-family:'Instrument Serif';font-style:italic;font-size:42px;box-shadow:0 10px 28px -8px color-mix(in oklch, var(--teal) 60%, transparent)}
+  .pwa-icon-label{font-size:11px;color:oklch(0.82 0.01 175);font-weight:500}
+  .pwa-bottom-nav{display:flex;justify-content:space-around;padding:12px 8px 18px;border-top:1px solid oklch(0.22 0.015 175);background:oklch(0.13 0.012 175)}
+  .pwa-nav-ico{width:36px;height:36px;display:grid;place-items:center;border-radius:8px}
+  .pwa-nav-ico.active{color:var(--teal)}
+  .pwa-nav-ico svg{width:20px;height:20px;stroke:oklch(0.45 0.01 175);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .pwa-nav-ico.active svg{stroke:var(--teal)}
+  .tally-btn{position:fixed;right:24px;bottom:24px;z-index:200;background:var(--teal);color:var(--bg);padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:500;letter-spacing:-0.01em;box-shadow:0 8px 24px -8px var(--teal),inset 0 0 0 1px oklch(0 0 0 / 0.06);transition:transform .15s ease,box-shadow .15s ease}
+  .tally-btn:hover{transform:translateY(-2px)}
+  .tally-overlay{position:fixed;inset:0;z-index:300;background:oklch(0 0 0 / 0.55);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fadeIn .2s ease}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .tally-modal{position:relative;width:min(640px,92vw);height:min(700px,88vh);background:var(--bg);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--line);animation:slideUp .25s cubic-bezier(.2,.7,.2,1)}
+  @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .tally-close{position:absolute;top:12px;right:12px;z-index:1;width:30px;height:30px;border-radius:50%;background:var(--bg-2);border:1px solid var(--line-2);display:grid;place-items:center;font-size:13px;color:var(--ink-2);transition:background .15s ease}
+  .tally-close:hover{background:var(--line)}
 `;
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -659,6 +685,59 @@ function Why() {
   );
 }
 
+function MobileSection() {
+  return (
+    <section className="section" id="mobile">
+      <div className="wrap">
+        <div className="mobile-pwa-inner">
+          <div className="reveal">
+            <span className="section-kicker">§ 04 — Always in your pocket</span>
+            <h2>Add XFintel to your <span className="serif">home screen.</span></h2>
+            <p className="section-lead">
+              No App Store. No download required. Open xfintel.com in your mobile browser,
+              tap Share, and add to your home screen — it launches full-screen like a native app.
+            </p>
+            <div className="pwa-steps">
+              {([['01','Open xfintel.com on your phone'],['02','Tap Share → "Add to Home Screen"'],['03','Done! Launch like a native app']] as [string,string][]).map(([n,t]) => (
+                <div className="pwa-step" key={n}>
+                  <div className="pwa-num">{n}</div>
+                  <div>{t}</div>
+                </div>
+              ))}
+            </div>
+            <div className="pwa-badges">
+              {['📱 iOS Safari','🤖 Android Chrome','💻 Desktop too'].map(b => (
+                <span className="pwa-badge" key={b}>{b}</span>
+              ))}
+            </div>
+          </div>
+          <div className="pwa-phone-wrap reveal">
+            <div className="pwa-phone">
+              <div className="pwa-status-bar"><span>9:41</span><span>▲▲▲</span></div>
+              <div className="pwa-icon-grid">
+                <div className="pwa-app-icon">X</div>
+                <div className="pwa-icon-label">XFintel</div>
+              </div>
+              <div className="pwa-bottom-nav">
+                {[true,false,false,false].map((active,i) => (
+                  <div className={`pwa-nav-ico ${active?'active':''}`} key={i}>
+                    <svg viewBox="0 0 24 24">
+                      {i===0 && <><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></>}
+                      {i===1 && <><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>}
+                      {i===2 && <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>}
+                      {i===3 && <><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></>}
+                    </svg>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FinalCTA() {
   return (
     <section id="cta" className="final-cta">
@@ -688,6 +767,24 @@ function Footer() {
         <div className="mono" style={{fontSize:12}}>© 2026 XFintel Labs · not investment advice</div>
       </div>
     </footer>
+  );
+}
+
+function TallyFeedback() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button className="tally-btn" onClick={() => setOpen(true)}>💬 Feedback</button>
+      {open && (
+        <div className="tally-overlay" onClick={() => setOpen(false)}>
+          <div className="tally-modal" onClick={e => e.stopPropagation()}>
+            <button className="tally-close" onClick={() => setOpen(false)}>✕</button>
+            <iframe src="https://tally.so/r/gDkrXN" width="100%" height="100%"
+              frameBorder={0} marginHeight={0} marginWidth={0} title="Feedback form"/>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -723,8 +820,10 @@ export default function LandingPage() {
       <Performance />
       <FeedAndTrending />
       <Why />
+      <MobileSection />
       <FinalCTA />
       <Footer />
+      <TallyFeedback />
     </>
   );
 }
