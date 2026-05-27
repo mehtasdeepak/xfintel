@@ -18,8 +18,8 @@ const CATEGORIZE_LIMIT = 30;
 const POST_DELAY_MS = 300;
 
 type ClaudeCategory =
-  | "trade_call" | "position_update" | "exit" | "performance"
-  | "portfolio" | "watchlist" | "analysis" | "noise";
+  | "trade_call" | "upside" | "downside" | "exit"
+  | "portfolio" | "opinion" | "noise";
 
 type ClaudeResult = {
   category: ClaudeCategory;
@@ -34,14 +34,13 @@ function buildPrompt(content: string): string {
   return `You are a financial social media post categorizer for a platform that tracks financial influencers on X (Twitter).
 
 Categorize this post into exactly one category:
-- trade_call: Direct recommendation to buy/long or sell/short a specific asset
-- position_update: Modifying an existing position (moving stops, adding more, scaling in/out)
-- exit: Full or partial closure of a position
-- performance: Reporting a PnL result, gain or loss on a closed or active trade
-- portfolio: Current holdings snapshot or portfolio allocation
-- watchlist: Expressing interest in an asset without executing
-- analysis: Technical or fundamental commentary without an immediate trade action
-- noise: Everything else (motivational quotes, news sharing, general chat)
+- trade_call: Influencer explicitly states they are buying/selling RIGHT NOW. Must have clear action words: "buying", "bought", "added", "entering", "long X", "shorting", "sold", "taking position", "initiating". Questions, opinions, or price targets alone do NOT qualify.
+- upside: Reporting a gain or win on a previous trade. "up X%", "in profit", "hit target", "closed green"
+- downside: Reporting a loss or stopped out. "stopped out", "down X%", "closed red", "taking loss"
+- exit: Full or partial closure of a position. "sold", "exited", "closed my position", "took profits"
+- portfolio: Current holdings snapshot or portfolio allocation. "my portfolio is", "currently holding", "40% in X"
+- opinion: Analysis, commentary, questions, watchlist, general market views, price targets without action. Catch-all for non-actionable content.
+- noise: Motivational quotes, news sharing, memes, off-topic content with no financial signal
 
 Also identify:
 - ticker: The primary stock/crypto ticker mentioned (e.g. NVDA, TSLA, BTC) or null if none
