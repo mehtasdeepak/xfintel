@@ -161,6 +161,31 @@ async function handler(req: NextRequest) {
       continue;
     }
 
+    if (result.category === 'trade_call' && mergedTickers.length > 0) {
+      try {
+        const ticker = mergedTickers[0];
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=5d&includePrePost=false`;
+        const yRes = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
+        const yJson = await yRes.json();
+        const chartResult = yJson?.chart?.result?.[0];
+        const closes = chartResult?.indicators?.quote?.[0]?.close;
+        const price = chartResult?.meta?.regularMarketPrice ?? closes?.[closes.length - 1];
+        if (price) {
+          await supabase
+            .from('posts')
+            .update({
+              entry_price: result.entry_price ?? price,
+              current_price: price,
+              price_captured_at: new Date().toISOString(),
+              tracker_status: result.target_price ? 'in_progress' : 'no_target',
+            })
+            .eq('id', post.id);
+        }
+      } catch {
+        // best effort — price capture failure is non-fatal
+      }
+    }
+
     totalCategorized++;
     confidenceSum += result.confidence;
     categoryBreakdown[result.category] = (categoryBreakdown[result.category] ?? 0) + 1;
