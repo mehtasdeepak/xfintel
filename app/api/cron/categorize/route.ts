@@ -34,10 +34,10 @@ function buildPrompt(content: string): string {
   return `You are a financial social media post categorizer for a platform that tracks financial influencers on X (Twitter).
 
 Categorize this post into exactly one category:
-- trade_call: Influencer explicitly states they are buying/selling RIGHT NOW. Must have clear action words: "buying", "bought", "added", "entering", "long X", "shorting", "sold", "taking position", "initiating". Questions, opinions, or price targets alone do NOT qualify.
+- trade_call: Influencer explicitly states they are buying/selling RIGHT NOW. Must have clear action words: "buying", "bought", "added", "entering", "going long X", "longing X", "shorting", "taking position", "initiating". "sold" alone belongs in exit, not here. Questions, opinions, or price targets alone do NOT qualify. Note: "I am long X" without a current action word is opinion, not trade_call. Examples: "Buying $NVDA here", "Added $TSLA to my position", "Initiating $AAPL long", "Shorting $SPY". NOT trade_call: "I like $NVDA", "$NVDA to $250", "Watching $AAPL", "Long term bull on $TSLA"
 - upside: Reporting a gain or win on a previous trade. "up X%", "in profit", "hit target", "closed green"
 - downside: Reporting a loss or stopped out. "stopped out", "down X%", "closed red", "taking loss"
-- exit: Full or partial closure of a position. "sold", "exited", "closed my position", "took profits"
+- exit: Closing an EXISTING position, not opening a new one. "sold", "exited", "closed my position", "took profits"
 - portfolio: Current holdings snapshot or portfolio allocation. "my portfolio is", "currently holding", "40% in X"
 - opinion: Analysis, commentary, questions, watchlist, general market views, price targets without action. Catch-all for non-actionable content.
 - noise: Motivational quotes, news sharing, memes, off-topic content with no financial signal
